@@ -1,0 +1,359 @@
+Con quello che mi hai detto, farei una scelta abbastanza netta: un unico progetto Next.js full-stack, senza backend separato. In una settimana vi fa risparmiare tantissimo tempo e vi permette di concentrare il lavoro su UI + WebMCP.
+
+Stack che sceglierei
+Area	Tecnologia	Perché
+Framework	Next.js 16.3.3 + TypeScript	Frontend e backend nello stesso repo
+UI	Tailwind CSS + shadcn/ui	Dashboard bella molto rapidamente
+DB	PostgreSQL	Perfetto per dipendenti, presenze, ferie, documenti
+ORM	Drizzle ORM	Schema semplice, TypeScript-first, poca magia
+Auth	Better Auth	Login + sessioni + ruoli senza costruirli voi
+File storage	Hetzner Object Storage S3	PDF buste paga/documenti
+Charts	Recharts	Ore lavorate, presenze, ferie
+Date	date-fns	Calendario/presenze
+Hosting	Coolify + Hetzner	Avete già tutto
+WebMCP	Native document.modelContext API	È esattamente ciò che interessa all'hackathon
+
+Per Next.js userei 16.3.3, che al momento è la versione Active LTS e contiene anche le patch di sicurezza pubblicate il 25 agosto.
+
+Better Auth secondo me è particolarmente adatto perché ha già integrazione Next.js e supporta organizzazioni, membri, ruoli e permessi.
+
+Architettura
+
+Io farei sostanzialmente questo:
+
+                    ┌─────────────────────┐
+                    │      ChatGPT        │
+                    │       Agent         │
+                    └──────────┬──────────┘
+                               │
+                             WebMCP
+                               │
+                               ▼
+┌─────────────────────────────────────────────────┐
+│                 Next.js App                     │
+│                                                 │
+│   Dashboard UI        WebMCP tools              │
+│       │                   │                     │
+│       └─────────┬─────────┘                     │
+│                 ▼                               │
+│           Domain functions                      │
+│                                                 │
+│  attendance.get()                              │
+│  attendance.update()                           │
+│  leave.request()                               │
+│  payslips.get()                                │
+│  employees.workingToday()                      │
+│                 │                               │
+│                 ▼                               │
+│             Drizzle ORM                         │
+└─────────────┬───────────────────────┬───────────┘
+              │                       │
+              ▼                       ▼
+        PostgreSQL            Hetzner S3
+                              PDFs / files
+
+La cosa fondamentale è quel layer centrale di domain functions.
+
+Non fate:
+
+UI -> API
+WebMCP -> altra API
+
+Fate:
+
+getAttendance(userId, month)
+
+requestLeave(userId, from, to, reason)
+
+getPayslips(userId)
+
+getWorkingEmployees(date)
+
+E poi sia l'UI sia WebMCP chiamano quelle funzioni.
+
+Così se sistemate un bug una volta, è sistemato ovunque.
+
+WebMCP
+
+Qui secondo me potete fare una demo molto forte.
+
+La specifica WebMCP attuale usa:
+
+document.modelContext.registerTool(...)
+
+ed è stata pubblicata come draft W3C il 19 agosto 2026.
+
+Per TypeScript potete anche aggiungere:
+
+pnpm add -D @mcp-b/webmcp-types
+
+che espone i tipi per document.modelContext.
+
+Io esporrei inizialmente solo 7-8 tool, fatti molto bene:
+
+get_my_attendance(month) — “Ho compilato tutte le presenze di agosto?”
+get_attendance_summary(month) — ore lavorate, giorni mancanti, ferie
+get_working_colleagues(date) — “Chi lavora oggi?”
+get_my_payslips() — lista buste paga disponibili
+get_payslip(month) — recupera quella di un mese
+request_leave(from, to, type, note) — “Chiedi ferie dal 4 al 7 marzo”
+get_leave_requests() — stato ferie/permessi
+approve_leave(requestId) — solo manager/admin
+
+Questo è molto più interessante per i giudici rispetto a esporre 40 CRUD tipo createEmployee, updateEmployee, ecc.
+
+La challenge valuta esplicitamente usefulness, originality, execution e soprattutto thoughtful use of WebMCP + qualità dell'esperienza human-agent.
+
+Quindi la domanda da farvi dovrebbe essere:
+
+“Quali cose sono molto più comode da chiedere a ChatGPT che da cercare nella dashboard?”
+
+Ed è esattamente dove le vostre use case funzionano bene.
+
+Il vantaggio dell'autenticazione
+
+Qui c'è anche una bella caratteristica da mostrare nella demo.
+
+WebMCP lavora sulla pagina aperta e autenticata: l'agent può utilizzare i tool esposti dal sito nel contesto della sessione dell'utente.
+
+Quindi:
+
+Andrea fa login
+      ↓
+session.user.id = Andrea
+      ↓
+ChatGPT:
+
+"Controlla se ho compilato
+le presenze questo mese"
+      ↓
+get_my_attendance()
+      ↓
+backend prende userId
+dalla sessione
+
+Non dovete dare a ChatGPT:
+
+userId = 123
+
+anzi, non dovreste proprio permetterglielo.
+
+Il tool:
+
+get_my_attendance
+
+sa già chi è "my".
+
+Questa secondo me è anche una cosa bella da spiegare nel video.
+
+Ruoli
+
+Terrei solamente:
+
+ADMIN
+MANAGER
+EMPLOYEE
+Employee
+
+Dashboard personale:
+
+Overview
+Attendance
+Leave
+Payslips
+Profile
+Manager
+
+In più:
+
+Team
+Leave requests
+Team attendance
+Admin
+
+In più:
+
+Employees
+Documents
+Settings
+
+Non perderei un minuto a creare ACL super sofisticate.
+
+Better Auth ha già un sistema di access control e custom permissions se poi volete espanderlo.
+
+Schema database
+
+Anche qui: pochi modelli.
+
+users
+organizations
+organization_members
+
+employees
+├─ user_id
+├─ role
+├─ job_title
+├─ department
+└─ hire_date
+
+attendance
+├─ employee_id
+├─ date
+├─ start_time
+├─ end_time
+├─ break_minutes
+└─ status
+
+leave_requests
+├─ employee_id
+├─ type
+├─ start_date
+├─ end_date
+├─ status
+├─ note
+└─ approved_by
+
+payslips
+├─ employee_id
+├─ month
+├─ year
+├─ file_key
+└─ created_at
+
+documents
+├─ employee_id
+├─ type
+├─ title
+├─ file_key
+└─ created_at
+
+E basta.
+
+Niente payroll engine.
+
+Niente calcolo stipendi.
+
+Niente gestione contratti sofisticata.
+
+Niente timbrature GPS.
+
+Niente notifiche.
+
+Niente microservizi.
+
+PDF
+
+Visto che siete già su Hetzner, userei direttamente Hetzner Object Storage con bucket privato.
+
+È S3-compatible ed è esplicitamente pensato anche per documenti/static content.
+
+Quindi:
+
+Postgres
+
+payslip
+file_key:
+payslips/employee_123/2026-07.pdf
+
+e:
+
+Hetzner S3
+
+crewboard-private/
+   payslips/
+      ...
+
+Generi una signed URL quando serve.
+
+Non salverei PDF dentro Postgres.
+
+UI che immagino
+
+La dashboard iniziale la farei molto simile a Linear/Raycast/Vercel come sensazione.
+
+┌───────────────────────────────────────────────────────────────┐
+│ Crewboard                              🔔     Andrea ▾        │
+├──────────────┬────────────────────────────────────────────────┤
+│              │                                                │
+│ Overview     │  Good morning, Andrea                          │
+│ Attendance  │                                                │
+│ Leave       │  ┌────────┐ ┌────────┐ ┌────────┐ ┌────────┐  │
+│ Payslips    │  │ 152 h  │ │  18/20 │ │  4 d   │ │ € --- │  │
+│ Team        │  │ Worked │ │Presence│ │ Leave  │ │Payslip │  │
+│              │  └────────┘ └────────┘ └────────┘ └────────┘  │
+│              │                                                │
+│              │  August 2026                                   │
+│              │                                                │
+│              │  M   T   W   T   F   S   S                    │
+│              │              1   2   3                         │
+│              │  4   5   6   7   8   9  10                    │
+│              │  ●   ●   ●   🏖   🏖                          │
+│              │                                                │
+│              │  Your team today                               │
+│              │                                                │
+│              │  🟢 Federico     Remote                        │
+│              │  🟢 Andrea       Office                        │
+│              │  🏖 Marco        Leave                         │
+│              │                                                │
+└──────────────┴────────────────────────────────────────────────┘
+
+Non cercherei di creare 15 schermate.
+
+Meglio 5 schermate estremamente curate.
+
+Come dividerei la settimana
+
+Giorno 1: Next.js, design system, DB schema, auth, seed di 8-10 dipendenti.
+
+Giorno 2: dashboard + employees + layout.
+
+Giorno 3: calendario presenze + ferie/permessi.
+
+Giorno 4: payslip upload/view + documenti.
+
+Giorno 5: WebMCP.
+
+Giorno 6: rendete WebMCP veramente impressionante: tool descriptions, permissions, errori, conferme, edge cases.
+
+Giorno 7: polish UI, seed realistico, deploy, demo script, video.
+
+Io eviterei di iniziare WebMCP il giorno 1. Prima fate funzionare le domain functions normalmente, poi registrarli come tool diventa quasi banale.
+
+Un dettaglio che cambierei rispetto alla vostra idea iniziale
+
+Non la presenterei come:
+
+“Employee management dashboard with WebMCP.”
+
+È corretta ma abbastanza generica.
+
+La presenterei concettualmente come:
+
+“Your workplace, agent-ready.”
+
+La dashboard è per gli umani.
+
+WebMCP è per l'agent.
+
+E utilizzano gli stessi dati, gli stessi permessi e la stessa sessione.
+
+È molto più forte come storia da hackathon.
+
+E avete un use case naturale molto bello per la demo:
+
+"Do I need to do anything before I finish work today?"
+
+→ controlla presenze
+→ scopre che manca l'uscita di martedì
+→ controlla richieste ferie
+→ vede che quella di marzo è ancora draft
+→ controlla documenti
+→ vede una nuova busta paga
+
+Quello, più che un semplice “mostrami le presenze”, fa vedere davvero perché WebMCP rende il prodotto migliore.
+
+Una sola avvertenza resta il mobile: oggi OpenAI indica i Site Tools come disponibili nel built-in browser dell'app desktop ChatGPT, quindi renderei Crewboard responsive, ma considererei desktop il percorso WebMCP ufficiale per la submission.
+
+Se volete ricordarvi di fare il check finale prima della deadline, posso anche impostarvi un promemoria.
+
+Checklist finale hackathon WebMCP

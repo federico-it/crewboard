@@ -1,0 +1,57 @@
+# Dependencies and package-manager caches
+node_modules/
+.pnpm-store/
+.npm/
+.yarn/cache/
+.yarn/unplugged/
+.yarn/install-state.gz
+.pnp.*
+
+# Next.js and generated build output
+.next/
+out/
+dist/
+build/
+.turbo/
+*.tsbuildinfo
+next-env.d.ts
+
+# Local environment and credentials (keep sanitized examples)
+.env*
+!.env.example
+!.env.*.example
+*.pem
+*.key
+
+# Logs and test output
+*.log
+coverage/
+playwright-report/
+test-results/
+
+# Local databases, dumps and private uploads
+*.sqlite
+*.sqlite3
+*.db
+*.db-journal
+*.db-shm
+*.db-wal
+*.dump
+/backups/
+/uploads/
+/storage/
+/tmp/
+
+# Local deployment metadata
+.vercel/
+
+# OS and editor files
+.DS_Store
+._*
+Thumbs.db
+.idea/
+*.swp
+*.swo
+*~
+
+# Keep package lockfiles, Drizzle migrations and shared editor settings tracked.
