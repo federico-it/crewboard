@@ -15,7 +15,7 @@
 | tsx (test) | 4.23.13 |
 | Ambiente di prova | Node 26.7.0, npm 11.19.0, macOS |
 
-Versioni dirette esatte in [package.json](../package.json), transitive in [package-lock.json](../package-lock.json). Il campo engines di Next.js richiede Node >=20.9; non è una dichiarazione di compatibilità WebMCP di ogni browser supportato da Next.js.
+La tabella riporta l'ambiente della prima prova. Dopo il merge del setup in ingresso, il package manager è pnpm `10.33.3` con [pnpm-lock.yaml](../pnpm-lock.yaml); TypeScript è fissato a `5.9.3`, compatibile con il parser ESLint in ingresso (peer `<6.1.0`). Le versioni correnti sono in [package.json](../package.json). Il campo engines di Next.js richiede Node >=20.9; non è una dichiarazione di compatibilità WebMCP di ogni browser supportato da Next.js.
 
 La [guida imperativa Chrome](https://developer.chrome.com/docs/ai/webmcp/imperative-api) conferma `document.modelContext.registerTool`, cleanup tramite `AbortSignal` e il pacchetto `webmcp-types`. I suoi tipi sono dichiarazioni globali, inclusi tramite [src/webmcp.d.ts](../src/webmcp.d.ts): non sono un modulo runtime né un polyfill. L'app non emula WebMCP quando manca.
 
@@ -27,7 +27,7 @@ I file AGENTS.md e CLAUDE.md sono stati generati da `next dev`; indicano di cons
 - [attendance-spike.tsx](../src/components/attendance-spike.tsx): componente client, rilevamento API, registrazione, input schema, output JSON serializzato, diagnostica e cleanup all'unmount.
 - `/about`: pagina senza tool per provare la navigazione Next.js.
 - Nessun auth, database, endpoint remoto, chiave API, dato personale, upload o persistenza. Tutti i dati sono pubblici nel bundle client; non sostituirli con presenze reali.
-- Nessuna dipendenza di design system o chat aggiunta. L'agente è quello del browser.
+- La prima prova non richiedeva un design system o una chat. Il merge successivo conserva Tailwind e l'Overview statica in `/overview`, isolata dagli stili dello spike. L'agente rimane quello del browser.
 
 Il parametro obbligatorio è `month`, formato `YYYY-MM`; campi extra vengono rifiutati anche dalla funzione. Lo spike non accetta un identificativo dipendente e non dimostra autorizzazioni. Giorni mancanti nel fixture non diventano assenze; non calcola ferie, calendario lavorativo completo o turni notturni.
 
@@ -79,3 +79,7 @@ Le chiamate positive sono state effettuate dall'agente tramite il tool scoperto 
 - Abilitare il flag nel Chrome previsto, riavviare e ripetere scoperta/invocazione/lifecycle; in alternativa effettuare la prova nel browser dell'app ChatGPT.
 - Dopo il primo deploy, ripetere sull'URL HTTPS reale: localhost non verifica hosting, header e accesso dei giudici.
 - Solo nel passo successivo introdurre sessione e dati server. La lettura hardcoded non valida sicurezza, persistenza né flussi HR.
+
+## Verifica dopo il merge del setup iniziale
+
+31 agosto 2026: `pnpm lint`, `pnpm typecheck`, `pnpm test` (3/3) e `pnpm build` passati. Installazione con `--frozen-lockfile --offline --ignore-scripts` coerente con il lockfile. Sulla build locale `127.0.0.1:3102`, browser Codex: tool scoperto e invocato con risultato 23.5 ore; navigazione verso `/overview` rimuove il tool, ritorno a `/` lo registra una sola volta. Overview e spike controllati visivamente con stili separati. Questa verifica non chiude la prova Chrome con flag né il deploy HTTPS.

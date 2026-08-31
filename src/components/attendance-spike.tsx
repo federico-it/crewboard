@@ -72,7 +72,7 @@ export function AttendanceSpike() {
     error: "WebMCP registration failed",
   };
 
-  return <main>
+  return <div className="spike"><main>
     <header>
       <p className="eyebrow">Crewboard / technical spike 01</p>
       <h1>One page. One tool.</h1>
@@ -124,6 +124,6 @@ export function AttendanceSpike() {
       </section>
     </div>
 
-    <footer><Link href="/about">Check navigation cleanup →</Link><p>Leaving this page should remove the tool; coming back should register it once.</p></footer>
-  </main>;
+    <footer><p><Link href="/overview">Open Overview mockup →</Link></p><Link href="/about">Check navigation cleanup →</Link><p>Leaving this page should remove the tool; coming back should register it once.</p></footer>
+  </main></div>;
 }

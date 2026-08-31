@@ -27,7 +27,7 @@ Direzione e stack proposti sono descritti in [docs/PROJECT.md](docs/PROJECT.md).
 - [x] Documentare lo stack proposto: Next.js, TypeScript, Tailwind, shadcn/ui, PostgreSQL, Drizzle e Better Auth.
 - [x] Aggiungere un `.gitignore` per dipendenze, output generati, segreti e dati locali.
 - [x] Creare il README con presentazione, funzionalità previste, stack e link alla documentazione.
-- [x] Verificare e bloccare le dipendenze dello spike: Next.js 16.3.3, React 19.2.8, TypeScript 7.0.2, webmcp-types 0.1.5, npm e lockfile. Build e typecheck passati.
+- [x] Verificare e bloccare le dipendenze dello spike iniziale (risultati storici in docs/SPIKE.md). Il merge adotta pnpm 10.33.3 e TypeScript 5.9.3 per compatibilità con ESLint, preservando Next.js 16.3.3, React 19.2.8 e webmcp-types 0.1.5.
 - [ ] Verificare separatamente le dipendenze MVP non installate (auth, DB, storage e UI).
 - [ ] Creare la struttura iniziale Next.js con confine server e funzioni di dominio condivise.
 - [x] Documentare nel README installazione e avvio locale dello spike.
@@ -81,3 +81,4 @@ Aggiungere qui le idee non necessarie alla prima demo.
 - 2026-08-31: conservata la proposta iniziale in `docs/PROJECT.md` e il testo originale in `docs/brief-originale.txt`. Direzione: app Next.js full-stack con logica di dominio condivisa tra UI e WebMCP; dettagli da validare prima dell'implementazione.
 - 2026-08-31: raccolte fonti ufficiali e lacune in `docs/CHALLENGE.md`; sostituita la sequenza di una settimana con priorità datate. Nessuna implementazione, licenza, pubblicazione o candidatura effettuata.
 - 2026-08-31: implementato lo spike richiesto, limitato a Next.js e una lettura su fixture. Risultati e limite Chrome documentati in `docs/SPIKE.md`; nessun auth, DB, deploy o ampliamento del perimetro demo.
+- 2026-08-31: risoluzione del merge con il setup iniziale: spike su `/`, Overview statica conservata su `/overview`, stili isolati; mantenuti Tailwind, ESLint e ambiente Cursor con un solo lockfile pnpm. L'Overview non implementa i flussi HR mostrati come mockup.
