@@ -89,6 +89,8 @@ Il server di produzione usa [127.0.0.1:3101](http://127.0.0.1:3101). Build e svi
 
 L’ambiente Cursor Cloud Agent è conservato in `.cursor/environment.json`: installazione con lockfile congelato e `pnpm dev` sulla porta 3000. Il solo lockfile autorevole è `pnpm-lock.yaml`.
 
+L’ambiente locale Codex è in [.codex/environments/environment.toml](.codex/environments/environment.toml): il setup esegue `CI=1 pnpm install --frozen-lockfile`. Le azioni **Run**, **Check** e **Build** avviano rispettivamente il dev server su [127.0.0.1:3100](http://127.0.0.1:3100), lint/typecheck/test e la build. Richiede Node e pnpm disponibili nel terminale; non installa runtime globali e non richiede segreti o database. Il setup dei nuovi worktree e le azioni seguono il formato degli [ambienti locali Codex](https://developers.openai.com/codex/app/local-environments).
+
 Per lavorare sulla definizione del progetto:
 
 1. Leggere [progetto e architettura](docs/PROJECT.md) per perimetro, ruoli, modello dati e decisioni aperte.

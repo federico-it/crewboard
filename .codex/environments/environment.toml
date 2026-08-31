@@ -1,0 +1,20 @@
+version = 1
+name = "crewboard"
+
+[setup]
+script = "CI=1 pnpm install --frozen-lockfile"
+
+[[actions]]
+name = "Run"
+icon = "run"
+command = "pnpm dev --hostname 127.0.0.1 --port 3100"
+
+[[actions]]
+name = "Check"
+icon = "run"
+command = "pnpm lint && pnpm typecheck && pnpm test"
+
+[[actions]]
+name = "Build"
+icon = "run"
+command = "pnpm build"
