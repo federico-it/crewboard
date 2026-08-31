@@ -1,7 +1,7 @@
 # Crewboard — cose da fare
 
 Obiettivo: sviluppare Crewboard, dashboard per presenze, ferie e documenti dei dipendenti, per la challenge WebMCP di OpenAI.
-Direzione e stack proposti sono descritti in [docs/PROJECT.md](docs/PROJECT.md); versioni, dettagli tecnici e requisiti ufficiali restano da verificare.
+Direzione e stack proposti sono descritti in [docs/PROJECT.md](docs/PROJECT.md). Requisiti ufficiali verificati, priorità P0/P1 e scadenze sono in [docs/CHALLENGE.md](docs/CHALLENGE.md); versioni e prove tecniche restano aperte.
 
 ## Come usare questa lista
 
@@ -12,12 +12,15 @@ Direzione e stack proposti sono descritti in [docs/PROJECT.md](docs/PROJECT.md);
 
 ## 1. Direzione e challenge
 
-- [ ] Inserire il link ufficiale della challenge e verificare requisiti, scadenza e modalità di consegna.
+- [x] Inserire il link ufficiale della challenge e verificare requisiti, scadenza e modalità di consegna (31 agosto; CHALLENGE.md).
+- [ ] Verificare R5 con i partecipanti e completare l'iscrizione Devpost; non dedurre l'ammissibilità dalla presenza del repository.
 - [x] Documentare l'idea e la struttura indicativa di Crewboard, conservando il brief originale.
 - [x] Proporre un flusso demo: controllare presenze incomplete, richieste ferie e buste paga disponibili.
 - [x] Documentare il perimetro proposto dell'MVP e le esclusioni.
 - [x] Identificare gli otto tool WebMCP iniziali e i relativi casi d'uso.
 - [ ] Confermare il perimetro finale della demo, inclusi eventuali stati draft e documenti nuovi.
+- [x] Proporre un percorso P0 con criteri di accettazione e un piano datato compatibile con il tempo residuo.
+- [ ] Conservare evidenze R4: commit, contributi e provenienza di eventuale materiale preesistente.
 
 ## 2. Setup del progetto
 
@@ -31,6 +34,8 @@ Direzione e stack proposti sono descritti in [docs/PROJECT.md](docs/PROJECT.md);
 - [ ] Definire schema Drizzle e migrazioni, incluse relazioni organizzazione/team e fonte autorevole dei ruoli.
 - [ ] Configurare Better Auth con ruoli EMPLOYEE, MANAGER e ADMIN e controlli server.
 - [ ] Verificare un tool WebMCP minimo nel browser previsto dalla challenge.
+- [ ] Preparare il primo deploy e annotare browser/versione usati; seguire i riferimenti API in CHALLENGE.md, senza assumere compatibilità dai soli tipi.
+- [ ] Predisporre il pacchetto S2: scegliere la licenza con il titolare, aggiungere LICENSE, env di esempio senza segreti e istruzioni per migrazioni/seed.
 
 ## 3. MVP e WebMCP
 
@@ -42,6 +47,11 @@ Direzione e stack proposti sono descritti in [docs/PROJECT.md](docs/PROJECT.md);
 - [ ] Definire input, output, errori e autorizzazioni delle azioni WebMCP.
 - [ ] Implementare le azioni WebMCP previste per l'MVP.
 - [ ] Preparare dati dimostrativi riproducibili con 8–10 dipendenti e PDF fittizi.
+- [ ] Rendere completa la correzione delle presenze da UI e verificarne la rilettura tramite agente.
+- [ ] Fornire nella UI manager la lista autorizzata e l'ID da usare in approve_leave; lasciare personale get_leave_requests.
+- [ ] Implementare conferma umana legata al payload, annullamento senza scritture e protezione dai duplicati nelle mutazioni.
+- [ ] Gestire scoperta/cleanup dei tool, logout, navigazione e interfaccia utilizzabile senza WebMCP.
+- [ ] Preparare account demo dipendente/manager, casi di accesso negato e ripristino sicuro dei soli dati sintetici.
 
 ## 4. Verifica e consegna
 
@@ -49,9 +59,14 @@ Direzione e stack proposti sono descritti in [docs/PROJECT.md](docs/PROJECT.md);
 - [ ] Verificare sessioni, isolamento tra organizzazioni/team e accessi negati a presenze e documenti altrui.
 - [ ] Gestire caricamenti, stati vuoti, errori e conferme per le azioni sensibili.
 - [ ] Controllare accessibilità da tastiera e layout mobile/desktop.
-- [ ] Preparare la demo e i materiali richiesti dal regolamento.
-- [ ] Pubblicare il progetto, se richiesto, e verificare la versione pubblicata.
-- [ ] Ricontrollare i requisiti ufficiali e inviare la candidatura.
+- [ ] Verificare retry, conflitti, note ostili, link PDF scaduti e contesti di sessione non più validi.
+- [ ] Raccogliere prove del percorso P0 con prompt, tool invocati, risultati UI e persistenza, come indicato in CHALLENGE.md.
+- [x] Preparare un modello inglese di candidatura e una scaletta demo, marcati come bozze (docs/SUBMISSION.md).
+- [ ] Completare S4 e R3: testo, README per i giudici e istruzioni di prova; eliminare promesse non dimostrate.
+- [ ] Produrre e verificare S3 usando il copione solo come traccia, senza dati o asset non autorizzati.
+- [ ] Pubblicare e verificare S1/S2: app, repository, licenza riconosciuta e accesso da sessione pulita. Condividere solo credenziali demo, tramite il modulo previsto.
+- [ ] Registrare SHA/tag e URL definitivi, predisporre disponibilità R2 e congelamento secondo le FAQ; disabilitare deploy automatici sulla versione consegnata.
+- [ ] Ricontrollare Rules/FAQ/Updates, inviare entro R1 e conservare la ricevuta Devpost; una bozza salvata non vale come invio verificato.
 
 ## Backlog — dopo l'MVP
 
@@ -60,3 +75,4 @@ Aggiungere qui le idee non necessarie alla prima demo.
 ## Decisioni
 
 - 2026-08-31: conservata la proposta iniziale in `docs/PROJECT.md` e il testo originale in `docs/brief-originale.txt`. Direzione: app Next.js full-stack con logica di dominio condivisa tra UI e WebMCP; dettagli da validare prima dell'implementazione.
+- 2026-08-31: raccolte fonti ufficiali e lacune in `docs/CHALLENGE.md`; sostituita la sequenza di una settimana con priorità datate. Nessuna implementazione, licenza, pubblicazione o candidatura effettuata.
