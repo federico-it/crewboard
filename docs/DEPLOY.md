@@ -14,6 +14,10 @@ Le future credenziali vanno inserite nelle variabili runtime di Coolify, mai nel
 
 Il Dockerfile usa Node 24 su Debian slim, pnpm 10.33.3 e il lockfile congelato. Next.js genera l'output `standalone`; l'immagine finale contiene il server, le dipendenze necessarie e gli asset, ed esegue `node server.js` come utente `node`, non root. Il contesto Docker include solo gli input di build elencati in `.dockerignore`.
 
+I quattro stage sono `base` (runtime condiviso), `dependencies` (pnpm e installazione con cache BuildKit), `builder` (lint, test e build Next.js, che include TypeScript) e `runner` (solo output eseguibile). Il builder copia esplicitamente sorgenti, asset e configurazioni: modificare documentazione o Dockerfile non invalida inutilmente i layer dei sorgenti. La cache pnpm è dedicata a Crewboard: usare il builder solo per build fidate. Riferimenti: [cache Docker](https://docs.docker.com/build/cache/optimize/), [pnpm e Docker](https://pnpm.io/docker).
+
+Il runtime non esegue installazioni né migrazioni all'avvio. `node server.js` è il processo principale e riceve direttamente i segnali di arresto. Il requisito Node del progetto è >=24 anche fuori Docker.
+
 La build richiede rete per registry npm, immagini Docker e i font Google usati da `next/font`. L'immagine base `node:24-bookworm-slim` è bloccata al digest nel Dockerfile, oltre alle dipendenze applicative nel lockfile. Aggiornare deliberatamente il digest per ricevere patch di sistema/Node e ripetere le prove. Conservare anche il digest dell'immagine distribuita per poter ripristinare la stessa versione.
 
 Prova locale, con Docker avviato:
@@ -32,6 +36,8 @@ docker stop crewboard-spike-check
 ```
 
 `/healthz` controlla soltanto che il server risponda. Non verifica WebMCP, il browser o futuri servizi esterni.
+
+Verifica del Dockerfile rifinito (31 agosto 2026): build Linux ARM64 riuscita con lint, 3 test e controllo TypeScript Next.js; runtime Node 24.20.0, UID/GID 1000, stato `healthy`. Verificati `/healthz` con `no-store`, `/`, `/about`, `/overview`, `/next.svg` e 11 asset statici della home (HTTP 200). Assenti nel runtime sorgenti `/app/src`, `.env`, pnpm/store, TypeScript ed ESLint. La prova riguarda il container locale, non un server remoto o una nuova verifica WebMCP nel browser della challenge.
 
 ## Configurazione Coolify
 

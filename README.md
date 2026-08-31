@@ -68,7 +68,7 @@ I PDF resteranno nello storage; il database conserverà i metadati. Gli URL firm
 
 ## Come iniziare
 
-Prerequisito Next.js: Node.js >=20.9. Il package manager è pnpm `10.33.3`; Node locale `26.7.0`. Non servono `.env`, credenziali o servizi esterni.
+Prerequisito del progetto: Node.js >=24. Il package manager è pnpm `10.33.3`; il container usa Node 24, il Node locale verificato è `26.7.0`. Non servono `.env`, credenziali o servizi esterni.
 
 Il file [.env.example](.env.example) chiarisce questa distinzione e contiene solo esempi commentati per il futuro MVP PostgreSQL/R2. Attualmente nessun codice legge quelle variabili: impostare `DATABASE_URL` non collega un database e non esistono ancora migrazioni o seed. L'app finale sarà full-stack Next.js; lo spike attuale verifica solo WebMCP.
 
