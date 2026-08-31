@@ -10,7 +10,9 @@ L'obiettivo è offrire alle persone e all'agente gli stessi dati, le stesse rego
 
 **Spike WebMCP eseguibile.** Next.js espone un solo tool, `get_attendance_summary`, che legge quattro presenze hardcoded. Registrazione, scoperta e invocazione reale sono state provate nel browser integrato di Codex, anche sulla build di produzione locale. In Chrome 152, nella configurazione trovata, l'API non è disponibile: fallback manuale verificato, prova con flag ancora aperta.
 
-Next.js `16.3.3`, React `19.2.8`, TypeScript `7.0.2` e `webmcp-types` `0.1.5` sono bloccati con npm e lockfile. Dettagli e limiti delle prove: [resoconto spike](docs/SPIKE.md). Requisiti ufficiali: [piano challenge](docs/CHALLENGE.md).
+Next.js `16.3.3`, React `19.2.8`, TypeScript `5.9.3` e `webmcp-types` `0.1.5` sono bloccati con pnpm e lockfile. Dettagli e limiti delle prove: [resoconto spike](docs/SPIKE.md). Requisiti ufficiali: [piano challenge](docs/CHALLENGE.md).
+
+L’Overview in ingresso è conservata su `/overview` come mockup statico separato, con Tailwind ed ESLint. Lo spike rimane su `/`; i dati delle due pagine sono fixture indipendenti.
 
 Lo spike non include auth, database, ferie, PDF o dati reali. Le funzionalità e l'architettura completa descritte sotto restano proposte per l'MVP. Nessun deploy pubblico effettuato. Consegne e prove mancanti sono tracciate nel [TODO](TODO.md).
 
@@ -66,23 +68,26 @@ I PDF resteranno nello storage; il database conserverà i metadati. Gli URL firm
 
 ## Come iniziare
 
-Prerequisito Next.js: Node.js >=20.9. Lo spike è stato provato con Node `26.7.0` e npm `11.19.0`. Non servono `.env`, credenziali o servizi esterni.
+Prerequisito Next.js: Node.js >=20.9. Il package manager è pnpm `10.33.3`; Node locale `26.7.0`. Non servono `.env`, credenziali o servizi esterni.
 
 ```sh
-npm ci
-npm run dev -- --port 3100
+pnpm install --frozen-lockfile
+pnpm dev --port 3100
 ```
 
 Aprire [lo spike locale](http://127.0.0.1:3100). La pagina separa calcolo manuale e chiamate WebMCP; il secondo pannello cambia solo quando il tool viene invocato. Input di prova: `{"month":"2026-08"}`. Risultato atteso: 23,5 ore, 3 giornate complete, 26 agosto incompleto.
 
 ```sh
-npm run typecheck
-npm test
-npm run build
-npm run start -- --port 3101
+pnpm lint
+pnpm typecheck
+pnpm test
+pnpm build
+pnpm start --port 3101
 ```
 
 Il server di produzione usa [127.0.0.1:3101](http://127.0.0.1:3101). Build e sviluppo sono locali, non un deploy. Procedura browser e criteri di esito sono in [SPIKE.md](docs/SPIKE.md).
+
+L’ambiente Cursor Cloud Agent è conservato in `.cursor/environment.json`: installazione con lockfile congelato e `pnpm dev` sulla porta 3000. Il solo lockfile autorevole è `pnpm-lock.yaml`.
 
 Per lavorare sulla definizione del progetto:
 
