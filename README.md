@@ -10,7 +10,9 @@ L'obiettivo è offrire alle persone e all'agente gli stessi dati, le stesse rego
 
 **Setup iniziale dell'applicazione.** Oltre alla documentazione, la repository contiene ora la struttura iniziale dell'app: un progetto Next.js (App Router) con TypeScript e Tailwind CSS e una prima schermata di Overview con dati dimostrativi. Database, autenticazione, storage e i tool WebMCP descritti qui restano da implementare e rappresentano la direzione proposta.
 
-Versioni delle dipendenze, API WebMCP e requisiti ufficiali della challenge devono essere verificati prima di proseguire l'implementazione.
+I requisiti della challenge e i riferimenti API sono stati verificati il 31 agosto 2026: vedere [requisiti, lacune e piano di completamento](docs/CHALLENGE.md). Restano da verificare versioni delle dipendenze e funzionamento dell'integrazione nel browser reale.
+
+La prossima priorità è un flusso completo con sessione demo, lettura presenze, richiesta ferie confermata e risultato visibile nella dashboard. Consegne e prove ancora mancanti sono tracciate nel [TODO](TODO.md); non esiste ancora una versione eseguibile o pubblicata verificata.
 
 ## Funzionalità previste
 
@@ -93,5 +95,6 @@ Per lavorare sulla definizione del progetto:
 1. Leggere [progetto e architettura](docs/PROJECT.md) per perimetro, ruoli, modello dati e decisioni aperte.
 2. Consultare il [TODO](TODO.md) per scegliere la prossima attività e aggiornarne lo stato.
 3. Usare il [brief originale](docs/brief-originale.txt) come riferimento della proposta iniziale.
+4. Seguire il [piano challenge](docs/CHALLENGE.md) e completare il [modello inglese di candidatura](docs/SUBMISSION.md) solo con funzionalità verificate.
 
 Non versionare credenziali, file `.env` reali, documenti personali o dump del database. Il `.gitignore` include esclusioni per questi file e per gli output generati; gli esempi `.env` privi di segreti, i lockfile e le migrazioni restano versionabili.

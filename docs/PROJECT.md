@@ -3,6 +3,7 @@
 Documento di riferimento iniziale, aggiornato il 31 agosto 2026.
 La struttura è indicativa: descrive la direzione proposta, non funzionalità già implementate.
 Il [testo originale](./brief-originale.txt) è conservato senza modifiche; le attività sono in [TODO.md](../TODO.md).
+Il confronto con le fonti ufficiali, i requisiti di consegna e i criteri di accettazione sono in [CHALLENGE.md](CHALLENGE.md), verificati il 31 agosto 2026.
 
 ## Obiettivo
 
@@ -27,7 +28,7 @@ Interfaccia e strumenti dell'agente devono utilizzare gli stessi dati, le stesse
 | Hosting | Coolify + Hetzner | Deploy dell'applicazione |
 | Integrazione agente | WebMCP nativo nel browser | Esposizione di azioni nel contesto della pagina autenticata |
 
-Il brief suggerisce Next.js `16.3.3`, `document.modelContext.registerTool(...)` e il pacchetto `@mcp-b/webmcp-types`. Sono riferimenti da verificare nella documentazione ufficiale prima del setup: non costituiscono versioni o contratti API già confermati.
+Il brief suggerisce Next.js `16.3.3` e il pacchetto `@mcp-b/webmcp-types`: non sono dipendenze approvate o installate. I riferimenti ufficiali ora verificati indicano `document.modelContext.registerTool(...)` e `webmcp-types`; fonti e limiti di compatibilità sono in [CHALLENGE.md](CHALLENGE.md). Verificare separatamente Next.js, versioni dei pacchetti e browser effettivo prima del setup.
 
 ## Architettura
 
@@ -119,6 +120,8 @@ Le firme sono indicative: definire formati non ambigui per date e mesi, schemi i
 
 Preferire questi casi d'uso a un catalogo generico di CRUD. UI e agente devono mostrare risultati coerenti dopo le modifiche. Verificare presto un tool minimo nel browser della challenge, poi completare l'integrazione sulle funzioni di dominio funzionanti.
 
+L'elenco `get_leave_requests()` è personale: non usarlo implicitamente come elenco di team. Per la demo manager, la UI autorizzata Team deve fornire la richiesta e il suo ID a `approve_leave`; un eventuale tool di elenco team sarebbe un'estensione separata. Conferma umana, retry, errori, gestione della sessione e compatibilità hanno criteri di accettazione nel [piano challenge](CHALLENGE.md).
+
 ## PDF e documenti
 
 - Conservare i file in un bucket S3 privato; nel database salvare metadati e `file_key`.
@@ -140,17 +143,9 @@ Le voci aggiuntive dipendono dal ruolo. Il wireframe del brief è illustrativo: 
 - Notifiche.
 - Microservizi o backend separato.
 
-## Sequenza indicativa: una settimana
+## Sequenza di completamento
 
-1. Setup Next.js, design system, schema DB, auth e seed di 8–10 dipendenti; verifica minima della compatibilità WebMCP.
-2. Layout, dashboard e gestione dipendenti.
-3. Calendario presenze e ferie/permessi.
-4. Upload e consultazione buste paga e documenti.
-5. Integrazione dei tool WebMCP sui flussi già funzionanti.
-6. Descrizioni tool, permessi, errori, conferme e casi limite.
-7. Rifinitura UI, dati demo, deploy, copione e video.
-
-Questa è una sequenza di lavoro, non una deadline ufficiale.
+La stima originaria di una settimana non è compatibile con il tempo residuo. Seguire il [piano datato e le priorità P0/P1](CHALLENGE.md): prima setup e verifica WebMCP sul deploy, poi presenze/ferie, PDF privati e infine prove e materiali. Gestione amministrativa estesa e upload generico non devono bloccare il percorso principale; usare seed sintetici quando necessario e dichiarare i limiti della versione.
 
 ## Demo proposta
 
@@ -160,13 +155,15 @@ L'agente controlla le presenze incomplete, lo stato delle richieste ferie e le b
 
 Il racconto originale include una richiesta in bozza e una busta paga nuova: questi dettagli richiedono rispettivamente uno stato draft e una definizione di “nuova”. Vanno implementati esplicitamente oppure esclusi dal copione. Gli otto tool proposti non includono la correzione delle presenze: nella prima demo tale correzione resta nell'interfaccia, salvo estensione concordata del perimetro.
 
+Per chiudere la demo, il piano aggiornato propone: lettura delle anomalie → correzione manuale → richiesta ferie via agente con conferma → rilettura dello stato persistito → apertura di un PDF fittizio. Usare richieste pending e documenti disponibili, evitando promesse su draft e badge non implementati. La scaletta inglese è in [SUBMISSION.md](SUBMISSION.md).
+
 ## Verifiche ancora aperte
 
-- Link ufficiale, requisiti, criteri di valutazione, scadenza e materiali della challenge.
+- Soddisfare i requisiti ufficiali già raccolti in [CHALLENGE.md](CHALLENGE.md); verificare ammissibilità personale, iscrizione, licenza e pubblicazione.
 - Versione supportata e aggiornata di Next.js; compatibilità delle dipendenze.
-- API WebMCP corrente, eventuali tipi TypeScript e browser/ambiente richiesto per la demo.
+- Verificare in esecuzione API WebMCP e tipi TypeScript sul browser scelto, partendo dai riferimenti ufficiali raccolti.
 - Disponibilità effettiva dell'integrazione agente e delle superfici desktop/mobile.
 - Configurazione Better Auth, modello ruoli e isolamento di organizzazioni e team.
 - Ambienti Coolify/Hetzner, database, bucket privato e segreti di deploy.
 
-Le affermazioni del brief su release, patch di sicurezza, date degli standard e criteri ufficiali restano proposte da verificare, non fatti convalidati da questa documentazione.
+Le affermazioni del brief su release, patch di sicurezza e date degli standard restano da verificare. La verifica documentale della challenge non equivale a una prova tecnica o a una candidatura completata.
