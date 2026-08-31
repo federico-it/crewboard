@@ -23,6 +23,7 @@ Direzione e stack proposti sono descritti in [docs/PROJECT.md](docs/PROJECT.md);
 
 - [x] Documentare lo stack proposto: Next.js, TypeScript, Tailwind, shadcn/ui, PostgreSQL, Drizzle e Better Auth.
 - [x] Aggiungere un `.gitignore` per dipendenze, output generati, segreti e dati locali.
+- [x] Creare il README con presentazione, funzionalità previste, stack e link alla documentazione.
 - [ ] Verificare versioni e compatibilità delle dipendenze e scegliere il package manager.
 - [ ] Creare la struttura iniziale Next.js con confine server e funzioni di dominio condivise.
 - [ ] Documentare nel README installazione e avvio locale.
