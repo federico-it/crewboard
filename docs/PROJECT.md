@@ -23,7 +23,7 @@ Interfaccia e strumenti dell'agente devono utilizzare gli stessi dati, le stesse
 | Database | PostgreSQL | Dati relazionali |
 | ORM | Drizzle ORM | Schema, query e migrazioni |
 | Autenticazione | Better Auth | Sessioni, organizzazioni e ruoli |
-| Storage | Hetzner Object Storage compatibile S3 | PDF e documenti in bucket privato |
+| Storage | Cloudflare R2 tramite API compatibili S3 | PDF e documenti in bucket privato |
 | Grafici | Recharts | Riepiloghi di ore, presenze e ferie |
 | Date | date-fns | Calendario e gestione delle date |
 | Hosting | Coolify + Hetzner | Deploy dell'applicazione |
@@ -47,7 +47,7 @@ Dashboard UI                 Agente nel browser
                 |
        +--------+---------+
        |                  |
-   Drizzle ORM       Storage S3 privato
+   Drizzle ORM       Cloudflare R2 privato
        |                  |
    PostgreSQL        PDF e documenti
 ```
@@ -67,7 +67,7 @@ src/
     auth/              Sessione e autorizzazioni
     db/                Connessione e schema Drizzle
     domain/            Logica applicativa condivisa
-    storage/           Accesso a S3 e generazione URL firmati
+    storage/           Accesso a R2 via API S3 e generazione URL firmati
   webmcp/              Registrazione tool e adattatori browser
 drizzle/               Migrazioni versionate
 docs/                  Documentazione del progetto
@@ -125,10 +125,12 @@ L'elenco `get_leave_requests()` è personale: non usarlo implicitamente come ele
 
 ## PDF e documenti
 
-- Conservare i file in un bucket S3 privato; nel database salvare metadati e `file_key`.
+- Conservare i file in un bucket Cloudflare R2 privato tramite API S3; nel database salvare metadati e `file_key`. Scelta confermata il 31 agosto 2026: R2 sostituisce Hetzner Object Storage; l'hosting dell'app resta Coolify/Hetzner.
 - Generare URL firmati a breve durata solo dopo il controllo dei permessi sul server.
 - Non salvare PDF nel database né rendere pubblico il bucket.
 - Usare solo documenti e dipendenti fittizi nella demo; non versionare buste paga reali, credenziali o dump.
+
+R2 supporta API S3 e URL firmati: usare l'endpoint indicato nel dashboard del bucket e regione `auto`, con credenziali limitate al bucket. Lasciare disabilitati accesso pubblico `r2.dev` e domini pubblici del bucket. Gli URL firmati sono temporanei e vanno trattati come credenziali di accesso. Riferimenti: [API R2](https://developers.cloudflare.com/r2/api/s3/api/), [URL firmati](https://developers.cloudflare.com/r2/api/s3/presigned-urls/). L'integrazione non è ancora implementata; [.env.example](../.env.example) contiene solo esempi commentati da collegare al codice MVP.
 
 ## Direzione UI
 
@@ -165,6 +167,6 @@ Per chiudere la demo, il piano aggiornato propone: lettura delle anomalie → co
 - Verificare in esecuzione API WebMCP e tipi TypeScript sul browser scelto, partendo dai riferimenti ufficiali raccolti.
 - Disponibilità effettiva dell'integrazione agente e delle superfici desktop/mobile.
 - Configurazione Better Auth, modello ruoli e isolamento di organizzazioni e team.
-- Ambienti Coolify/Hetzner, database, bucket privato e segreti di deploy.
+- Ambienti Coolify/Hetzner, database PostgreSQL, bucket Cloudflare R2 privato e segreti di deploy.
 
 Le affermazioni del brief su release, patch di sicurezza e date degli standard restano da verificare. La verifica documentale della challenge non equivale a una prova tecnica o a una candidatura completata.

@@ -39,6 +39,8 @@ Direzione e stack proposti sono descritti in [docs/PROJECT.md](docs/PROJECT.md).
 - [x] Verificare scoperta e invocazione reali nel browser integrato di Codex, UI coerente, input errato, mese vuoto, navigazione e reload (docs/SPIKE.md).
 - [ ] Chiudere la prova nel browser previsto dalla challenge: Chrome 152 disponibile ma API assente nella configurazione attuale; abilitare il flag e riprovare. La prova Codex non è dichiarata come prova ChatGPT/Chrome con flag.
 - [ ] Preparare il primo deploy e annotare browser/versione usati; seguire i riferimenti API in CHALLENGE.md, senza assumere compatibilità dai soli tipi.
+  - [x] Predisporre Dockerfile standalone, health check e guida Coolify (docs/DEPLOY.md).
+  - [ ] Pubblicare sul dominio scelto e completare la prova WebMCP HTTPS nel browser della challenge.
 - [ ] Predisporre il pacchetto S2: scegliere la licenza con il titolare, aggiungere LICENSE, env di esempio senza segreti e istruzioni per migrazioni/seed.
 
 ## 3. MVP e WebMCP
@@ -48,6 +50,7 @@ Direzione e stack proposti sono descritti in [docs/PROJECT.md](docs/PROJECT.md).
 - [ ] Implementare calendario presenze e riepiloghi con regole esplicite per date, pause e ore.
 - [ ] Implementare richieste ferie/permessi e approvazione manager/admin.
 - [ ] Implementare upload e consultazione di buste paga e documenti con bucket privato e URL firmati.
+- [ ] Collegare Cloudflare R2 tramite API S3, validare le variabili server e provare accessi privati/URL firmati; sostituisce lo storage Hetzner previsto inizialmente.
 - [ ] Definire input, output, errori e autorizzazioni delle azioni WebMCP.
 - [ ] Implementare le azioni WebMCP previste per l'MVP.
 - [ ] Preparare dati dimostrativi riproducibili con 8–10 dipendenti e PDF fittizi.
@@ -77,6 +80,8 @@ Direzione e stack proposti sono descritti in [docs/PROJECT.md](docs/PROJECT.md).
 Aggiungere qui le idee non necessarie alla prima demo.
 
 ## Decisioni
+
+- 2026-08-31: su indicazione del team, storage file su Cloudflare R2 privato; hosting app invariato Coolify/Hetzner. Aggiunto `.env.example` con soli esempi commentati per il futuro MVP: lo spike non usa ancora DB, auth o storage.
 
 - 2026-08-31: conservata la proposta iniziale in `docs/PROJECT.md` e il testo originale in `docs/brief-originale.txt`. Direzione: app Next.js full-stack con logica di dominio condivisa tra UI e WebMCP; dettagli da validare prima dell'implementazione.
 - 2026-08-31: raccolte fonti ufficiali e lacune in `docs/CHALLENGE.md`; sostituita la sequenza di una settimana con priorità datate. Nessuna implementazione, licenza, pubblicazione o candidatura effettuata.

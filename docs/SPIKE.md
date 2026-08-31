@@ -80,6 +80,20 @@ Le chiamate positive sono state effettuate dall'agente tramite il tool scoperto 
 - Dopo il primo deploy, ripetere sull'URL HTTPS reale: localhost non verifica hosting, header e accesso dei giudici.
 - Solo nel passo successivo introdurre sessione e dati server. La lettura hardcoded non valida sicurezza, persistenza né flussi HR.
 
+La preparazione Coolify, i comandi Docker e la checklist HTTPS sono in [DEPLOY.md](DEPLOY.md). Nessun dominio pubblico è stato configurato da questa preparazione.
+
 ## Verifica dopo il merge del setup iniziale
 
 31 agosto 2026: `pnpm lint`, `pnpm typecheck`, `pnpm test` (3/3) e `pnpm build` passati. Installazione con `--frozen-lockfile --offline --ignore-scripts` coerente con il lockfile. Sulla build locale `127.0.0.1:3102`, browser Codex: tool scoperto e invocato con risultato 23.5 ore; navigazione verso `/overview` rimuove il tool, ritorno a `/` lo registra una sola volta. Overview e spike controllati visivamente con stili separati. Questa verifica non chiude la prova Chrome con flag né il deploy HTTPS.
+
+## Preparazione Docker / Coolify
+
+31 agosto 2026: output Next.js standalone, Dockerfile multi-stage, contesto di build limitato agli input necessari e route `/healthz`. Node base bloccato per digest; nessuna dipendenza applicativa aggiunta.
+
+- Host macOS / Node 26.7.0: `pnpm lint`, `pnpm test` (3/3), `pnpm build` e `pnpm typecheck` passati.
+- Immagine `crewboard:spike`: build Linux ARM64 riuscita, Node 24.20.0, utente `node`, circa 286 MB non compressi. L'architettura del futuro server Hetzner non è stata verificata.
+- Container locale `127.0.0.1:3103`: stato Docker `healthy`; `/healthz` restituisce 200, `{"status":"ok"}` e `Cache-Control: no-store`. `/about`, `/overview` e asset pubblico `/next.svg`: HTTP 200.
+- Browser integrato Codex sul container: scoperta e invocazione WebMCP reali; agosto restituisce 1410 minuti / 23.5 ore, tre giornate complete, 26 agosto incompleto; pannello JSON coerente e contatore a 1. Settembre restituisce zero record; mese 13 rifiutato; navigazione a `/about` rimuove il tool, ritorno a `/` registra un solo tool nuovamente invocabile.
+- Immagine locale verificata: `sha256:894a3a4e2e0e0b882fd9cba7d83aa018fa6c45f213f6bf8ed307e7816c392b96`. Non pubblicata su un registry.
+
+Queste prove non attestano DNS/TLS, reverse proxy Coolify, compatibilità del server remoto né esecuzione nel browser ChatGPT/Chrome richiesto. Il gate challenge resta aperto.

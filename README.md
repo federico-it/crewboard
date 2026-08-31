@@ -57,18 +57,20 @@ Le operazioni personali ricaveranno l'identità dalla sessione, senza consentire
 | Interfaccia | Tailwind CSS + shadcn/ui |
 | Database e ORM | PostgreSQL + Drizzle ORM |
 | Autenticazione | Better Auth |
-| File privati | Hetzner Object Storage compatibile S3 |
+| File privati | Cloudflare R2, bucket privato tramite API S3 |
 | Grafici e date | Recharts + date-fns |
 | Hosting | Coolify + Hetzner |
 | Strumenti per l'agente | WebMCP nel browser |
 
-Un'unica applicazione Next.js, senza backend separato: dashboard e tool WebMCP raggiungeranno le stesse funzioni di dominio attraverso ingressi server autenticati. La logica applicativa accederà a PostgreSQL tramite Drizzle e ai documenti tramite storage S3 privato.
+Un'unica applicazione Next.js, senza backend separato: dashboard e tool WebMCP raggiungeranno le stesse funzioni di dominio attraverso ingressi server autenticati. La logica applicativa accederà a PostgreSQL tramite Drizzle e ai documenti tramite Cloudflare R2 privato, usando le API compatibili S3.
 
 I PDF resteranno nello storage; il database conserverà i metadati. Gli URL firmati saranno generati solo dopo la verifica dei permessi. Per la demo verranno utilizzati dipendenti e documenti fittizi.
 
 ## Come iniziare
 
 Prerequisito Next.js: Node.js >=20.9. Il package manager è pnpm `10.33.3`; Node locale `26.7.0`. Non servono `.env`, credenziali o servizi esterni.
+
+Il file [.env.example](.env.example) chiarisce questa distinzione e contiene solo esempi commentati per il futuro MVP PostgreSQL/R2. Attualmente nessun codice legge quelle variabili: impostare `DATABASE_URL` non collega un database e non esistono ancora migrazioni o seed. L'app finale sarà full-stack Next.js; lo spike attuale verifica solo WebMCP.
 
 ```sh
 pnpm install --frozen-lockfile
@@ -82,10 +84,14 @@ pnpm lint
 pnpm typecheck
 pnpm test
 pnpm build
-pnpm start --port 3101
+cp -r public .next/standalone/
+cp -r .next/static .next/standalone/.next/
+PORT=3101 HOSTNAME=127.0.0.1 node .next/standalone/server.js
 ```
 
 Il server di produzione usa [127.0.0.1:3101](http://127.0.0.1:3101). Build e sviluppo sono locali, non un deploy. Procedura browser e criteri di esito sono in [SPIKE.md](docs/SPIKE.md).
+
+Per Coolify è predisposto un [Dockerfile](Dockerfile) con output standalone, utente non root e health check `/healthz`. La [guida di deploy](docs/DEPLOY.md) contiene prova Docker locale, configurazione del proxy HTTPS e checklist WebMCP sull'URL pubblico. Il container non richiede `.env` o servizi esterni; la configurazione predisposta non equivale a una pubblicazione effettuata.
 
 L’ambiente Cursor Cloud Agent è conservato in `.cursor/environment.json`: installazione con lockfile congelato e `pnpm dev` sulla porta 3000. Il solo lockfile autorevole è `pnpm-lock.yaml`.
 
