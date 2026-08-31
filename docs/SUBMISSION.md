@@ -1,6 +1,6 @@
 # Crewboard — submission worksheet
 
-**Draft, not ready to submit.** As of August 31, 2026, this repository contains planning documents only. Replace every bracketed field and validate each claim against the submitted build. Requirements and sources: [challenge checklist](CHALLENGE.md).
+**Draft, not ready to submit.** As of August 31, 2026, this repository contains planning documents and a local Next.js spike with one hardcoded attendance tool. No authenticated product or public deployment exists. See the [spike report](SPIKE.md). Replace every bracketed field and validate each claim against the submitted build. Requirements and sources: [challenge checklist](CHALLENGE.md).
 
 ## Release details
 

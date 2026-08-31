@@ -1,0 +1,36 @@
+:root { color-scheme: light; background: #f4f5f2; color: #192721; font-family: system-ui, sans-serif; }
+* { box-sizing: border-box; }
+body { margin: 0; }
+main { max-width: 1060px; padding: 48px 24px; margin: auto; }
+header { margin-bottom: 32px; }
+h1 { font-size: clamp(2rem, 5vw, 3.5rem); letter-spacing: -.045em; margin: 12px 0; }
+h2 { font-size: 1.15rem; margin-top: 0; }
+p { line-height: 1.6; }
+.eyebrow { font-size: .78rem; letter-spacing: .12em; text-transform: uppercase; font-weight: 700; color: #405f4e; }
+.intro { font-size: 1.15rem; }
+.notice { color: #4f5c55; font-size: .9rem; }
+section { background: #fff; border: 1px solid #d9dfd9; border-radius: 12px; padding: 24px; margin-bottom: 20px; min-width: 0; }
+.status { border-left: 4px solid #7c8580; padding: 8px 12px; background: #f4f5f2; font-weight: 600; }
+.registered { border-color: #1e6949; color: #1e6949; }
+.unsupported, .error { border-color: #956400; color: #755000; }
+.results { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.table-scroll { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; text-align: left; white-space: nowrap; }
+caption { text-align: left; color: #526157; font-size: .85rem; margin-bottom: 10px; }
+th, td { padding: 12px 10px; border-bottom: 1px solid #e5e9e4; }
+thead { background: #f4f5f2; }
+tbody th { font-weight: 500; }
+label { display: block; margin-bottom: 8px; font-size: .9rem; font-weight: 600; }
+.form-row { display: flex; flex-wrap: wrap; gap: 10px; }
+input, button { font: inherit; padding: 11px 12px; border-radius: 6px; }
+input { min-width: 0; width: 140px; border: 1px solid #8a998f; background: white; color: inherit; }
+button { background: #235c42; color: white; border: 1px solid #235c42; cursor: pointer; }
+button:hover { background: #17452f; }
+:focus-visible { outline: 3px solid #347bec; outline-offset: 3px; }
+pre { padding: 16px; background: #f4f5f2; border-radius: 6px; white-space: pre-wrap; overflow-wrap: anywhere; font-size: .82rem; line-height: 1.6; }
+code { overflow-wrap: anywhere; }
+a { color: #235c42; text-underline-offset: 4px; font-weight: 600; }
+summary { cursor: pointer; }
+.diagnostics { overflow-wrap: anywhere; font-size: .8rem; }
+footer p { color: #526157; font-size: .9rem; }
+@media (max-width: 720px) { .results { grid-template-columns: 1fr; gap: 0; } main { padding: 28px 16px; } section { padding: 18px; } }

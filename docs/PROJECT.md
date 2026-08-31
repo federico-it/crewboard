@@ -2,6 +2,7 @@
 
 Documento di riferimento iniziale, aggiornato il 31 agosto 2026.
 La struttura è indicativa: descrive la direzione proposta, non funzionalità già implementate.
+Eccezione: lo [spike tecnico](SPIKE.md) ora implementa Next.js e il solo `get_attendance_summary` su dati hardcoded, senza il confine server autenticato descritto per l'MVP.
 Il [testo originale](./brief-originale.txt) è conservato senza modifiche; le attività sono in [TODO.md](../TODO.md).
 Il confronto con le fonti ufficiali, i requisiti di consegna e i criteri di accettazione sono in [CHALLENGE.md](CHALLENGE.md), verificati il 31 agosto 2026.
 
@@ -28,7 +29,7 @@ Interfaccia e strumenti dell'agente devono utilizzare gli stessi dati, le stesse
 | Hosting | Coolify + Hetzner | Deploy dell'applicazione |
 | Integrazione agente | WebMCP nativo nel browser | Esposizione di azioni nel contesto della pagina autenticata |
 
-Il brief suggerisce Next.js `16.3.3` e il pacchetto `@mcp-b/webmcp-types`: non sono dipendenze approvate o installate. I riferimenti ufficiali ora verificati indicano `document.modelContext.registerTool(...)` e `webmcp-types`; fonti e limiti di compatibilità sono in [CHALLENGE.md](CHALLENGE.md). Verificare separatamente Next.js, versioni dei pacchetti e browser effettivo prima del setup.
+Lo spike usa Next.js `16.3.3` e `webmcp-types` `0.1.5`, verificati e bloccati nel lockfile. `@mcp-b/webmcp-types` resta un riferimento storico del brief, non una dipendenza. Registrazione tramite `document.modelContext.registerTool(...)`; esiti reali e browser ancora da verificare in [SPIKE.md](SPIKE.md). Lo stack restante non è ancora installato.
 
 ## Architettura
 
@@ -72,7 +73,7 @@ drizzle/               Migrazioni versionate
 docs/                  Documentazione del progetto
 ```
 
-Queste directory verranno create con il setup dell'applicazione.
+Lo spike contiene soltanto `src/app`, `src/components` e `src/lib` (fixture e riepilogo). Le directory di dominio/server e le migrazioni verranno create con l'MVP.
 
 ## Ruoli e navigazione
 

@@ -27,13 +27,17 @@ Direzione e stack proposti sono descritti in [docs/PROJECT.md](docs/PROJECT.md).
 - [x] Documentare lo stack proposto: Next.js, TypeScript, Tailwind, shadcn/ui, PostgreSQL, Drizzle e Better Auth.
 - [x] Aggiungere un `.gitignore` per dipendenze, output generati, segreti e dati locali.
 - [x] Creare il README con presentazione, funzionalità previste, stack e link alla documentazione.
-- [ ] Verificare versioni e compatibilità delle dipendenze e scegliere il package manager.
+- [x] Verificare e bloccare le dipendenze dello spike: Next.js 16.3.3, React 19.2.8, TypeScript 7.0.2, webmcp-types 0.1.5, npm e lockfile. Build e typecheck passati.
+- [ ] Verificare separatamente le dipendenze MVP non installate (auth, DB, storage e UI).
 - [ ] Creare la struttura iniziale Next.js con confine server e funzioni di dominio condivise.
-- [ ] Documentare nel README installazione e avvio locale.
+- [x] Documentare nel README installazione e avvio locale dello spike.
+- [x] Aggiungere controllo TypeScript e tre test mirati a calcolo/validazione dello spike; tutti passati.
 - [ ] Configurare controllo dei tipi, lint e gestione delle variabili d'ambiente, dove necessari.
 - [ ] Definire schema Drizzle e migrazioni, incluse relazioni organizzazione/team e fonte autorevole dei ruoli.
 - [ ] Configurare Better Auth con ruoli EMPLOYEE, MANAGER e ADMIN e controlli server.
-- [ ] Verificare un tool WebMCP minimo nel browser previsto dalla challenge.
+- [x] Implementare un solo tool get_attendance_summary su array hardcoded, senza auth/DB.
+- [x] Verificare scoperta e invocazione reali nel browser integrato di Codex, UI coerente, input errato, mese vuoto, navigazione e reload (docs/SPIKE.md).
+- [ ] Chiudere la prova nel browser previsto dalla challenge: Chrome 152 disponibile ma API assente nella configurazione attuale; abilitare il flag e riprovare. La prova Codex non è dichiarata come prova ChatGPT/Chrome con flag.
 - [ ] Preparare il primo deploy e annotare browser/versione usati; seguire i riferimenti API in CHALLENGE.md, senza assumere compatibilità dai soli tipi.
 - [ ] Predisporre il pacchetto S2: scegliere la licenza con il titolare, aggiungere LICENSE, env di esempio senza segreti e istruzioni per migrazioni/seed.
 
@@ -76,3 +80,4 @@ Aggiungere qui le idee non necessarie alla prima demo.
 
 - 2026-08-31: conservata la proposta iniziale in `docs/PROJECT.md` e il testo originale in `docs/brief-originale.txt`. Direzione: app Next.js full-stack con logica di dominio condivisa tra UI e WebMCP; dettagli da validare prima dell'implementazione.
 - 2026-08-31: raccolte fonti ufficiali e lacune in `docs/CHALLENGE.md`; sostituita la sequenza di una settimana con priorità datate. Nessuna implementazione, licenza, pubblicazione o candidatura effettuata.
+- 2026-08-31: implementato lo spike richiesto, limitato a Next.js e una lettura su fixture. Risultati e limite Chrome documentati in `docs/SPIKE.md`; nessun auth, DB, deploy o ampliamento del perimetro demo.

@@ -1,6 +1,6 @@
 # WebMCP Challenge — requisiti e piano Crewboard
 
-Verificato il **31 agosto 2026**. Questa è una checklist operativa, non il regolamento completo né una conferma di ammissibilità personale. Stato locale: solo documentazione; app, tool, deploy e materiali finali ancora assenti.
+Verificato il **31 agosto 2026**. Questa è una checklist operativa, non il regolamento completo né una conferma di ammissibilità personale. Aggiornamento tecnico: esiste uno [spike locale con un tool hardcoded](SPIKE.md); MVP, deploy e materiali finali restano incompleti.
 
 ## Vincoli ufficiali
 
@@ -23,8 +23,8 @@ La [pagina ufficiale, Requirements](https://webmcp.devpost.com/#requirements) ri
 
 | ID | Consegna | Mancanza locale |
 | --- | --- | --- |
-| S1 | App WebMCP funzionante a un URL live, con credenziali se protetta | Nessuna app o istruzione di accesso |
-| S2 | Repository pubblico con sorgenti, asset, istruzioni e licenza open source riconoscibile | Mancano codice, LICENSE e setup; visibilità remota non verificata |
+| S1 | App WebMCP funzionante a un URL live, con credenziali se protetta | Solo spike locale, nessun deploy |
+| S2 | Repository pubblico con sorgenti, asset, istruzioni e licenza open source riconoscibile | Codice e setup dello spike presenti; LICENSE assente, visibilità remota non verificata |
 | S3 | Video YouTube pubblico, durata inferiore a 3 minuti, demo funzionante e spiegazione audio | Da registrare |
 | S4 | Testo: adeguatezza a WebMCP, beneficio UX, collaborazione persona/agente e implementazione | Solo proposta progettuale in italiano |
 

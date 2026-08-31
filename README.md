@@ -8,11 +8,11 @@ L'obiettivo è offrire alle persone e all'agente gli stessi dati, le stesse rego
 
 ## Stato del progetto
 
-**Fase iniziale di progettazione.** La repository contiene la documentazione, la checklist delle attività e il `.gitignore`. L'applicazione non è ancora implementata: funzionalità, stack e integrazione WebMCP descritti qui rappresentano la direzione proposta.
+**Spike WebMCP eseguibile.** Next.js espone un solo tool, `get_attendance_summary`, che legge quattro presenze hardcoded. Registrazione, scoperta e invocazione reale sono state provate nel browser integrato di Codex, anche sulla build di produzione locale. In Chrome 152, nella configurazione trovata, l'API non è disponibile: fallback manuale verificato, prova con flag ancora aperta.
 
-I requisiti della challenge e i riferimenti API sono stati verificati il 31 agosto 2026: vedere [requisiti, lacune e piano di completamento](docs/CHALLENGE.md). Restano da verificare versioni delle dipendenze e funzionamento dell'integrazione nel browser reale.
+Next.js `16.3.3`, React `19.2.8`, TypeScript `7.0.2` e `webmcp-types` `0.1.5` sono bloccati con npm e lockfile. Dettagli e limiti delle prove: [resoconto spike](docs/SPIKE.md). Requisiti ufficiali: [piano challenge](docs/CHALLENGE.md).
 
-La prossima priorità è un flusso completo con sessione demo, lettura presenze, richiesta ferie confermata e risultato visibile nella dashboard. Consegne e prove ancora mancanti sono tracciate nel [TODO](TODO.md); non esiste ancora una versione eseguibile o pubblicata verificata.
+Lo spike non include auth, database, ferie, PDF o dati reali. Le funzionalità e l'architettura completa descritte sotto restano proposte per l'MVP. Nessun deploy pubblico effettuato. Consegne e prove mancanti sono tracciate nel [TODO](TODO.md).
 
 ## Funzionalità previste
 
@@ -66,7 +66,23 @@ I PDF resteranno nello storage; il database conserverà i metadati. Gli URL firm
 
 ## Come iniziare
 
-Al momento non sono presenti `package.json`, dipendenze o comandi di avvio. Installazione, configurazione dell'ambiente e avvio locale saranno documentati dopo il setup dell'applicazione.
+Prerequisito Next.js: Node.js >=20.9. Lo spike è stato provato con Node `26.7.0` e npm `11.19.0`. Non servono `.env`, credenziali o servizi esterni.
+
+```sh
+npm ci
+npm run dev -- --port 3100
+```
+
+Aprire [lo spike locale](http://127.0.0.1:3100). La pagina separa calcolo manuale e chiamate WebMCP; il secondo pannello cambia solo quando il tool viene invocato. Input di prova: `{"month":"2026-08"}`. Risultato atteso: 23,5 ore, 3 giornate complete, 26 agosto incompleto.
+
+```sh
+npm run typecheck
+npm test
+npm run build
+npm run start -- --port 3101
+```
+
+Il server di produzione usa [127.0.0.1:3101](http://127.0.0.1:3101). Build e sviluppo sono locali, non un deploy. Procedura browser e criteri di esito sono in [SPIKE.md](docs/SPIKE.md).
 
 Per lavorare sulla definizione del progetto:
 
