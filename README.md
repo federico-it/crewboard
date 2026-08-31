@@ -8,7 +8,7 @@ L'obiettivo è offrire alle persone e all'agente gli stessi dati, le stesse rego
 
 ## Stato del progetto
 
-**Fase iniziale di progettazione.** La repository contiene la documentazione, la checklist delle attività e il `.gitignore`. L'applicazione non è ancora implementata: funzionalità, stack e integrazione WebMCP descritti qui rappresentano la direzione proposta.
+**Setup iniziale dell'applicazione.** Oltre alla documentazione, la repository contiene ora la struttura iniziale dell'app: un progetto Next.js (App Router) con TypeScript e Tailwind CSS e una prima schermata di Overview con dati dimostrativi. Database, autenticazione, storage e i tool WebMCP descritti qui restano da implementare e rappresentano la direzione proposta.
 
 I requisiti della challenge e i riferimenti API sono stati verificati il 31 agosto 2026: vedere [requisiti, lacune e piano di completamento](docs/CHALLENGE.md). Restano da verificare versioni delle dipendenze e funzionamento dell'integrazione nel browser reale.
 
@@ -66,7 +66,29 @@ I PDF resteranno nello storage; il database conserverà i metadati. Gli URL firm
 
 ## Come iniziare
 
-Al momento non sono presenti `package.json`, dipendenze o comandi di avvio. Installazione, configurazione dell'ambiente e avvio locale saranno documentati dopo il setup dell'applicazione.
+### Prerequisiti
+
+- Node.js 22+
+- pnpm 10 (il progetto fissa `pnpm@10.33.3` tramite il campo `packageManager`)
+
+### Sviluppo locale
+
+```bash
+pnpm install                # installa le dipendenze
+pnpm dev                    # avvia il dev server su http://localhost:3000
+```
+
+Altri comandi utili:
+
+```bash
+pnpm build                  # build di produzione
+pnpm start                  # avvia la build di produzione
+pnpm lint                   # ESLint
+```
+
+L'ambiente per i Cursor Cloud Agent è descritto in `.cursor/environment.json`: esegue `pnpm install --frozen-lockfile` e avvia `pnpm dev` in un terminale dedicato sulla porta 3000.
+
+### Lavorare sulla definizione del progetto
 
 Per lavorare sulla definizione del progetto:
 
