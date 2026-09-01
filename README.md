@@ -78,7 +78,7 @@ Per modifiche allo schema: `pnpm db:generate`, revisionare la migrazione generat
 
 ## Deploy e ambienti
 
-Il [Dockerfile](Dockerfile) mantiene Node 24 bloccato per digest e runtime standalone non root. Un target separato `operations` serve per migrazioni/seed; non viene incluso nel runner. Il deploy richiede ora `DATABASE_URL`, `BETTER_AUTH_URL`, `BETTER_AUTH_SECRET`: la vecchia configurazione senza env rimane sufficiente solo per `/spike` e le route pubbliche.
+Il [Dockerfile](Dockerfile) mantiene Node 24 bloccato per digest e runtime standalone non root. Il runner applica le migrazioni del database all'avvio (entrypoint) e poi avvia il server; un target separato `operations` resta per il seed e le migrazioni esplicite/anticipate e non viene incluso nel runner. Il deploy richiede ora `DATABASE_URL`, `BETTER_AUTH_URL`, `BETTER_AUTH_SECRET`: la vecchia configurazione senza env rimane sufficiente solo per `/spike` e le route pubbliche.
 
 La [guida Coolify](docs/DEPLOY.md) descrive ordine delle operazioni, connessione privata al DB e controlli dopo il deploy. R2 non è ancora necessario. Non copiare `.env` nell'immagine o inserire segreti nei build args.
 

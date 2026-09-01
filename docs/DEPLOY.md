@@ -22,9 +22,9 @@ Il Dockerfile usa Node 24/Debian slim bloccato per digest, pnpm 10.33.3 e lockfi
 - `dependencies`: dipendenze con cache BuildKit dedicata a build fidate di Crewboard.
 - `operations`: strumenti CLI, schema e migrazioni per operazioni esplicite sul DB.
 - `builder`: lint, test unitari e build Next.js con controllo TypeScript.
-- `runner` (finale/default): solo output standalone e asset, utente `node:node`, porta 3000, health check Node.
+- `runner` (finale/default): output standalone e asset, il migratore autonomo `migrate.cjs` (bundle esbuild senza tsx né node_modules completo), le migrazioni SQL versionate e l'entrypoint; utente `node:node`, porta 3000, health check Node.
 
-`operations` non viene copiato nel runner. Non vengono eseguite migrazioni, seed o installazioni ad ogni avvio del web server. La build scarica dipendenze e font Google: richiede rete. Conservare digest delle immagini e commit distribuito; aggiornare deliberatamente il digest Node per le patch.
+Il runner applica le migrazioni del database all'avvio (entrypoint) e poi avvia il web server; Drizzle registra le migrazioni applicate, quindi il passaggio è idempotente e un errore interrompe l'avvio prima di servire traffico. Seed e installazione delle dipendenze non vengono eseguiti ad ogni avvio. `operations` non viene copiato nel runner e resta disponibile per il seed e le migrazioni esplicite/anticipate. La build scarica dipendenze e font Google: richiede rete. Conservare digest delle immagini e commit distribuito; aggiornare deliberatamente il digest Node per le patch.
 
 ```sh
 docker build --pull -t crewboard:web .
@@ -36,11 +36,12 @@ docker build --target operations -t crewboard:operations .
 1. Predisporre un PostgreSQL dedicato su rete privata accessibile dall'app. Nessuna porta DB pubblica. Non usare le credenziali o la porta host di `compose.yaml`: quel file serve solo allo sviluppo locale.
 2. Costruire entrambi i target dal medesimo commit, configurando nella risorsa Coolify web il build pack **Dockerfile**, target finale `runner`, root `/`, Dockerfile `/Dockerfile`, porta interna `3000`, senza mapping pubblico diretto della 3000.
 3. Impostare le tre variabili runtime. Abilitare HTTPS sul dominio canonico tramite proxy Coolify e DNS corretto. Il server deve ascoltare su `0.0.0.0:3000` (già nel Dockerfile).
-4. Eseguire **una volta** le migrazioni con l'immagine `operations`, collegata alla stessa rete privata e al medesimo DB. Non eseguire migratori concorrenti.
-5. Solo sul database sintetico, eseguire il seed con password demo scelta dall'operatore. Il seed non sovrascrive account, password o presenze esistenti.
-6. Avviare/aggiornare il runner e verificare login, persistenza e tool prima di considerare concluso il deploy.
+4. Rivedere le migrazioni e fare backup del DB. Le migrazioni vengono applicate automaticamente dal runner all'avvio: avviare **una sola istanza alla volta** per non eseguire migratori concorrenti. In alternativa, applicarle in anticipo con l'immagine `operations` (il runner le troverà già applicate, quindi ripartirà senza modifiche).
+5. Avviare il runner: l'entrypoint applica le migrazioni e poi espone il web server su `0.0.0.0:3000`. Un errore nelle migrazioni interrompe l'avvio, così uno schema incompleto non serve traffico.
+6. Solo sul database sintetico, dopo che le tabelle esistono, eseguire il seed con l'immagine `operations` e la password demo scelta dall'operatore. Il seed non sovrascrive account, password o presenze esistenti.
+7. Verificare login, persistenza e tool prima di considerare concluso il deploy.
 
-Esempio CLI sul server, sostituendo rete e file env protetti predisposti fuori dal repository:
+Il runner applica le migrazioni all'avvio; l'immagine `operations` resta utile per applicarle in anticipo (primo comando, opzionale) e per il seed (secondo comando). Esempio CLI sul server, sostituendo rete e file env protetti predisposti fuori dal repository:
 
 ```sh
 docker run --rm --network RETE_PRIVATA --env-file /percorso/protetto/database.env crewboard:operations
@@ -71,6 +72,6 @@ Nessun iframe di anteprima o header `Permissions-Policy: tools=()` deve bloccare
 
 Il deploy demo è a istanza singola: i limiti anti-abuso auth in memoria non sono condivisi tra repliche. Configurare `advanced.ipAddress` di Better Auth solo dopo aver identificato l'header IP e i proxy realmente fidati della rete Coolify; non fidarsi in modo globale di un `X-Forwarded-For` fornito dal client. Nessun volume applicativo è necessario; PostgreSQL deve avere volume persistente e backup. I file futuri risiederanno su Cloudflare R2 privato.
 
-Tenere separati staging e versione consegnata. Prima di aggiornare il DB, revisionare le migrazioni e fare backup; un rollback dell'immagine non annulla automaticamente le migrazioni. Non cancellare i volumi per ripristinare la demo: il 26 agosto si può riportare incompleto dalla UI.
+Tenere separati staging e versione consegnata. Prima di aggiornare il DB, revisionare le migrazioni e fare backup; un rollback dell'immagine non annulla automaticamente le migrazioni. Il runner applica le migrazioni a ogni avvio: nel deploy demo a istanza singola è sicuro, ma per più repliche applicarle prima con l'immagine `operations` ed evitare avvii concorrenti del runner durante una migrazione. Non cancellare i volumi per ripristinare la demo: il 26 agosto si può riportare incompleto dalla UI.
 
 Riferimenti: [Coolify Dockerfile](https://coolify.io/docs/applications/build-packs/dockerfile), [health checks](https://coolify.io/docs/knowledge-base/health-checks), [Next.js standalone](https://nextjs.org/docs/app/api-reference/config/next-config-js/output).
