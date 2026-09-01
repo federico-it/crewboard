@@ -16,6 +16,9 @@ build/
 *.tsbuildinfo
 next-env.d.ts
 
+# Bundled standalone migration runner (produced by `pnpm build:migrate`)
+/migrate.cjs
+
 # Local environment and credentials (keep sanitized examples)
 .env*
 !.env.example

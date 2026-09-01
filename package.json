@@ -9,6 +9,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "build:migrate": "esbuild scripts/migrate.ts --bundle --platform=node --format=cjs --external:pg-native --external:pg-cloudflare --outfile=migrate.cjs",
     "start": "next start",
     "typecheck": "tsc --noEmit",
     "test": "tsx --test src/lib/attendance.test.ts src/features/attendance/model.test.ts",
@@ -38,6 +39,7 @@
     "@types/react": "19.2.18",
     "@types/react-dom": "19.2.5",
     "drizzle-kit": "0.31.10",
+    "esbuild": "0.25.12",
     "eslint": "9.39.5",
     "eslint-config-next": "16.3.3",
     "tailwindcss": "4.3.3",
