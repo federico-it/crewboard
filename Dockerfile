@@ -24,6 +24,9 @@ COPY next.config.ts tsconfig.json postcss.config.mjs eslint.config.mjs ./
 COPY src ./src
 COPY public ./public
 RUN pnpm lint && pnpm test && pnpm build
+# Self-contained migration runner (no tsx / full node_modules) for the runtime image.
+COPY scripts/migrate.ts ./scripts/migrate.ts
+RUN pnpm build:migrate
 
 # No full node_modules, pnpm store, TypeScript sources or build tools copied here.
 FROM base AS runner
@@ -33,8 +36,14 @@ ENV NODE_ENV=production \
 COPY --from=builder --chown=node:node /app/.next/standalone ./
 COPY --from=builder --chown=node:node /app/.next/static ./.next/static
 COPY --from=builder --chown=node:node /app/public ./public
+# Migrations run on startup: the bundled migrator plus the versioned SQL, no extra deps.
+COPY --from=builder --chown=node:node /app/migrate.cjs ./migrate.cjs
+COPY --chown=node:node drizzle ./drizzle
+COPY scripts/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 USER node:node
 EXPOSE 3000
 HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
     CMD ["node", "-e", "fetch('http://127.0.0.1:' + process.env.PORT + '/healthz', {signal: AbortSignal.timeout(4000)}).then(r => process.exit(r.status === 200 ? 0 : 1)).catch(() => process.exit(1))"]
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 CMD ["node", "server.js"]
