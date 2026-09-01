@@ -1,7 +1,7 @@
 # Crewboard — cose da fare
 
 Obiettivo: sviluppare Crewboard, dashboard per presenze, ferie e documenti dei dipendenti, per la challenge WebMCP di OpenAI.
-Direzione e stack proposti sono descritti in [docs/PROJECT.md](docs/PROJECT.md). Requisiti ufficiali verificati, priorità P0/P1 e scadenze sono in [docs/CHALLENGE.md](docs/CHALLENGE.md); versioni e prove tecniche restano aperte.
+Direzione e stack sono descritti in [docs/PROJECT.md](docs/PROJECT.md). Requisiti ufficiali verificati, priorità P0/P1 e scadenze sono in [docs/CHALLENGE.md](docs/CHALLENGE.md); il blocco presenze è implementato e verificato lato API, mentre prova browser, deploy e gli altri flussi restano aperti.
 
 ## Come usare questa lista
 
@@ -28,13 +28,13 @@ Direzione e stack proposti sono descritti in [docs/PROJECT.md](docs/PROJECT.md).
 - [x] Aggiungere un `.gitignore` per dipendenze, output generati, segreti e dati locali.
 - [x] Creare il README con presentazione, funzionalità previste, stack e link alla documentazione.
 - [x] Verificare e bloccare le dipendenze dello spike iniziale (risultati storici in docs/SPIKE.md). Il merge adotta pnpm 10.33.3 e TypeScript 5.9.3 per compatibilità con ESLint, preservando Next.js 16.3.3, React 19.2.8 e webmcp-types 0.1.5.
-- [ ] Verificare separatamente le dipendenze MVP non installate (auth, DB, storage e UI).
-- [ ] Creare la struttura iniziale Next.js con confine server e funzioni di dominio condivise.
+- [x] Installare e verificare le dipendenze del blocco presenze (Better Auth, Drizzle, PostgreSQL e Zod); storage e librerie dei flussi successivi restano da scegliere quando servono.
+- [x] Creare la struttura Next.js del blocco presenze con confine server e funzioni di dominio condivise.
 - [x] Documentare nel README installazione e avvio locale dello spike.
 - [x] Aggiungere controllo TypeScript e tre test mirati a calcolo/validazione dello spike; tutti passati.
-- [ ] Configurare controllo dei tipi, lint e gestione delle variabili d'ambiente, dove necessari.
-- [ ] Definire schema Drizzle e migrazioni, incluse relazioni organizzazione/team e fonte autorevole dei ruoli.
-- [ ] Configurare Better Auth con ruoli EMPLOYEE, MANAGER e ADMIN e controlli server.
+- [x] Configurare controllo dei tipi, lint e gestione delle variabili d'ambiente per il blocco corrente.
+- [x] Definire schema Drizzle e migrazioni per autenticazione, organizzazione, dipendente e presenze, incluso upgrade issuer Better Auth 1.7.
+- [ ] Estendere schema e autorizzazioni con team e fonte autorevole dei ruoli EMPLOYEE, MANAGER e ADMIN. Better Auth e i controlli server sulle presenze personali sono già attivi.
 - [x] Implementare un solo tool get_attendance_summary su array hardcoded, senza auth/DB.
 - [x] Verificare scoperta e invocazione reali nel browser integrato di Codex, UI coerente, input errato, mese vuoto, navigazione e reload (docs/SPIKE.md).
 - [ ] Chiudere la prova nel browser previsto dalla challenge: Chrome 152 disponibile ma API assente nella configurazione attuale; abilitare il flag e riprovare. La prova Codex non è dichiarata come prova ChatGPT/Chrome con flag.
@@ -45,28 +45,28 @@ Direzione e stack proposti sono descritti in [docs/PROJECT.md](docs/PROJECT.md).
 
 ## 3. MVP e WebMCP
 
-- [ ] Disegnare le schermate e gli stati del flusso principale.
+- [x] Disegnare e implementare gli stati del primo flusso presenze: login, caricamento, calendario, editor, errore, conflitto e sessione terminata.
 - [ ] Implementare layout, overview e gestione dipendenti secondo il ruolo.
-- [ ] Implementare calendario presenze e riepiloghi con regole esplicite per date, pause e ore.
+- [x] Implementare calendario presenze e riepiloghi persistenti con regole esplicite per date, pause e ore.
 - [ ] Implementare richieste ferie/permessi e approvazione manager/admin.
 - [ ] Implementare upload e consultazione di buste paga e documenti con bucket privato e URL firmati.
 - [ ] Collegare Cloudflare R2 tramite API S3, validare le variabili server e provare accessi privati/URL firmati; sostituisce lo storage Hetzner previsto inizialmente.
-- [ ] Definire input, output, errori e autorizzazioni delle azioni WebMCP.
+- [x] Definire input, output, errori e autorizzazione del tool di lettura presenze; ripetere per ogni tool futuro.
 - [ ] Implementare le azioni WebMCP previste per l'MVP.
 - [ ] Preparare dati dimostrativi riproducibili con 8–10 dipendenti e PDF fittizi.
-- [ ] Rendere completa la correzione delle presenze da UI e verificarne la rilettura tramite agente.
+- [ ] Verificare nel browser correzione UI → reload → rilettura agente. Persistenza e stesso dato server sono già coperti dal test d'integrazione.
 - [ ] Fornire nella UI manager la lista autorizzata e l'ID da usare in approve_leave; lasciare personale get_leave_requests.
-- [ ] Implementare conferma umana legata al payload, annullamento senza scritture e protezione dai duplicati nelle mutazioni.
-- [ ] Gestire scoperta/cleanup dei tool, logout, navigazione e interfaccia utilizzabile senza WebMCP.
-- [ ] Preparare account demo dipendente/manager, casi di accesso negato e ripristino sicuro dei soli dati sintetici.
+- [x] Implementare salvataggio esplicito, annullamento senza scritture e protezione da conflitti/duplicati nella correzione presenze.
+- [x] Gestire nel codice registrazione/cleanup del tool, logout, cambio sessione e interfaccia utilizzabile senza WebMCP; resta la prova browser del nuovo flusso.
+- [ ] Preparare account demo manager e relativo perimetro. Sono già disponibili tre dipendenti sintetici, isolamento verificato e ripristino mirato del 26 agosto.
 
 ## 4. Verifica e consegna
 
 - [ ] Verificare il flusso completo dall'interfaccia e tramite WebMCP nell'ambiente richiesto dalla challenge.
-- [ ] Verificare sessioni, isolamento tra organizzazioni/team e accessi negati a presenze e documenti altrui.
+- [ ] Completare isolamento di team e documenti. Sessioni, dati personali, due organizzazioni, logout, scadenza e dipendente inattivo sono verificati lato API.
 - [ ] Gestire caricamenti, stati vuoti, errori e conferme per le azioni sensibili.
 - [ ] Controllare accessibilità da tastiera e layout mobile/desktop.
-- [ ] Verificare retry, conflitti, note ostili, link PDF scaduti e contesti di sessione non più validi.
+- [ ] Completare note ostili e link PDF scaduti. Conflitti, payload con ID arbitrari e contesti di sessione non più validi sono verificati lato API.
 - [ ] Raccogliere prove del percorso P0 con prompt, tool invocati, risultati UI e persistenza, come indicato in CHALLENGE.md.
 - [x] Preparare un modello inglese di candidatura e una scaletta demo, marcati come bozze (docs/SUBMISSION.md).
 - [ ] Completare S4 e R3: testo, README per i giudici e istruzioni di prova; eliminare promesse non dimostrate.
@@ -81,7 +81,8 @@ Aggiungere qui le idee non necessarie alla prima demo.
 
 ## Decisioni
 
-- 2026-08-31: su indicazione del team, storage file su Cloudflare R2 privato; hosting app invariato Coolify/Hetzner. Aggiunto `.env.example` con soli esempi commentati per il futuro MVP: lo spike non usa ancora DB, auth o storage.
+- 2026-09-01: completato il primo blocco presenze personali con PostgreSQL/Drizzle, Better Auth, sessione demo, calendario persistente e tool sullo stesso endpoint. Test API in-process passato; prova UI/WebMCP browser e deploy restano aperti.
+- 2026-08-31: su indicazione del team, storage file su Cloudflare R2 privato; hosting app invariato Coolify/Hetzner. R2 non è ancora collegato.
 
 - 2026-08-31: conservata la proposta iniziale in `docs/PROJECT.md` e il testo originale in `docs/brief-originale.txt`. Direzione: app Next.js full-stack con logica di dominio condivisa tra UI e WebMCP; dettagli da validare prima dell'implementazione.
 - 2026-08-31: raccolte fonti ufficiali e lacune in `docs/CHALLENGE.md`; sostituita la sequenza di una settimana con priorità datate. Nessuna implementazione, licenza, pubblicazione o candidatura effettuata.

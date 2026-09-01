@@ -1,98 +1,76 @@
-# Deploy dello spike su Coolify
+# Deploy Crewboard su Coolify
 
-Configurazione preparata il 31 agosto 2026. Questa guida non attesta un deploy pubblico o una prova nel browser della challenge. Lo spike contiene solo dati fittizi hardcoded: nessun database, login, storage o segreto applicativo.
+Aggiornato il 1 settembre 2026. Questa versione introduce presenze persistenti e login. **Non distribuire il nuovo runner con la vecchia configurazione dello spike senza env/database.** `/spike` rimane una demo hardcoded pubblica separata.
 
-## Env e servizi: cosa serve oggi
+## Runtime richiesto
 
-Per distribuire lo spike non collegare alcun database: non ci sono client DB, schema o migrazioni. Non serve un file `.env`; [.env.example](../.env.example) contiene chiarimenti ed esempi futuri tutti commentati, non configurazione già consumata dall'app.
+| Variabile | Uso |
+| --- | --- |
+| `DATABASE_URL` | Connessione PostgreSQL privata, con password forte e TLS verificato se richiesto dal provider |
+| `BETTER_AUTH_URL` | Origine HTTPS canonica, ad esempio `https://crewboard.srvly.it`, senza path |
+| `BETTER_AUTH_SECRET` | Segreto casuale stabile, almeno 32 caratteri; generare con `openssl rand -hex 32` |
 
-L'MVP previsto è full-stack Next.js, con PostgreSQL/Drizzle e sessioni sul server. I file andranno su **Cloudflare R2**, non Hetzner Object Storage; Coolify/Hetzner resta l'hosting dell'app. Si possono predisporre PostgreSQL su rete privata e un bucket R2 privato, ma il collegamento effettivo arriverà con l'implementazione e la validazione delle variabili. Non usare `localhost` come host del DB dentro il container se PostgreSQL è un servizio separato.
+Usare variabili **runtime**, mai build args o `NEXT_PUBLIC_`. `.env.example` è il riferimento; `.env` non entra nel contesto Docker. La build non richiede connessioni DB o segreti. Non disabilitare la verifica dei certificati del database.
 
-Le future credenziali vanno inserite nelle variabili runtime di Coolify, mai nel Git, nei build args o con prefisso `NEXT_PUBLIC_`. I nomi in `.env.example` sono una proposta per l'integrazione futura; non dichiarano auth, DB o storage funzionanti.
+Solo il comando di seed richiede `DEMO_SEED_ENABLED=true` e `DEMO_PASSWORD` (almeno 12 caratteri). Non servono al processo web; non esporli al browser. R2 rimane la scelta per i file futuri, ma non è ancora usato e non richiede variabili per questo deploy.
 
-## Container
+## Immagini e target
 
-Il Dockerfile usa Node 24 su Debian slim, pnpm 10.33.3 e il lockfile congelato. Next.js genera l'output `standalone`; l'immagine finale contiene il server, le dipendenze necessarie e gli asset, ed esegue `node server.js` come utente `node`, non root. Il contesto Docker include solo gli input di build elencati in `.dockerignore`.
+Il Dockerfile usa Node 24/Debian slim bloccato per digest, pnpm 10.33.3 e lockfile congelato. I target sono:
 
-I quattro stage sono `base` (runtime condiviso), `dependencies` (pnpm e installazione con cache BuildKit), `builder` (lint, test e build Next.js, che include TypeScript) e `runner` (solo output eseguibile). Il builder copia esplicitamente sorgenti, asset e configurazioni: modificare documentazione o Dockerfile non invalida inutilmente i layer dei sorgenti. La cache pnpm è dedicata a Crewboard: usare il builder solo per build fidate. Riferimenti: [cache Docker](https://docs.docker.com/build/cache/optimize/), [pnpm e Docker](https://pnpm.io/docker).
+- `base`: runtime condiviso.
+- `dependencies`: dipendenze con cache BuildKit dedicata a build fidate di Crewboard.
+- `operations`: strumenti CLI, schema e migrazioni per operazioni esplicite sul DB.
+- `builder`: lint, test unitari e build Next.js con controllo TypeScript.
+- `runner` (finale/default): solo output standalone e asset, utente `node:node`, porta 3000, health check Node.
 
-Il runtime non esegue installazioni né migrazioni all'avvio. `node server.js` è il processo principale e riceve direttamente i segnali di arresto. Il requisito Node del progetto è >=24 anche fuori Docker.
-
-La build richiede rete per registry npm, immagini Docker e i font Google usati da `next/font`. L'immagine base `node:24-bookworm-slim` è bloccata al digest nel Dockerfile, oltre alle dipendenze applicative nel lockfile. Aggiornare deliberatamente il digest per ricevere patch di sistema/Node e ripetere le prove. Conservare anche il digest dell'immagine distribuita per poter ripristinare la stessa versione.
-
-Prova locale, con Docker avviato:
+`operations` non viene copiato nel runner. Non vengono eseguite migrazioni, seed o installazioni ad ogni avvio del web server. La build scarica dipendenze e font Google: richiede rete. Conservare digest delle immagini e commit distribuito; aggiornare deliberatamente il digest Node per le patch.
 
 ```sh
-docker build --pull -t crewboard:spike .
-docker run --rm -d --name crewboard-spike-check -p 127.0.0.1:3103:3000 crewboard:spike
-curl --fail http://127.0.0.1:3103/healthz
-docker inspect --format '{{.State.Health.Status}}' crewboard-spike-check
+docker build --pull -t crewboard:web .
+docker build --target operations -t crewboard:operations .
 ```
 
-Attendere il primo controllo: stato atteso `healthy`, risposta HTTP 200 con `{"status":"ok"}`. Aprire lo spike su `http://127.0.0.1:3103/`, controllare anche `/overview` e `/about`. A fine prova:
+## Ordine del primo deploy
+
+1. Predisporre un PostgreSQL dedicato su rete privata accessibile dall'app. Nessuna porta DB pubblica. Non usare le credenziali o la porta host di `compose.yaml`: quel file serve solo allo sviluppo locale.
+2. Costruire entrambi i target dal medesimo commit, configurando nella risorsa Coolify web il build pack **Dockerfile**, target finale `runner`, root `/`, Dockerfile `/Dockerfile`, porta interna `3000`, senza mapping pubblico diretto della 3000.
+3. Impostare le tre variabili runtime. Abilitare HTTPS sul dominio canonico tramite proxy Coolify e DNS corretto. Il server deve ascoltare su `0.0.0.0:3000` (già nel Dockerfile).
+4. Eseguire **una volta** le migrazioni con l'immagine `operations`, collegata alla stessa rete privata e al medesimo DB. Non eseguire migratori concorrenti.
+5. Solo sul database sintetico, eseguire il seed con password demo scelta dall'operatore. Il seed non sovrascrive account, password o presenze esistenti.
+6. Avviare/aggiornare il runner e verificare login, persistenza e tool prima di considerare concluso il deploy.
+
+Esempio CLI sul server, sostituendo rete e file env protetti predisposti fuori dal repository:
 
 ```sh
-docker stop crewboard-spike-check
+docker run --rm --network RETE_PRIVATA --env-file /percorso/protetto/database.env crewboard:operations
+docker run --rm --network RETE_PRIVATA --env-file /percorso/protetto/demo-seed.env crewboard:operations node --import tsx scripts/db.ts seed
 ```
 
-`/healthz` controlla soltanto che il server risponda. Non verifica WebMCP, il browser o futuri servizi esterni.
+`database.env` contiene `DATABASE_URL`; `demo-seed.env` aggiunge `DEMO_SEED_ENABLED=true` e `DEMO_PASSWORD`. Il nome della rete dipende dalla configurazione del server: non assumere che `crewboard_default`, usato localmente da Compose, esista su Coolify. Rimuovere i file temporanei con segreti secondo le procedure dell'operatore.
 
-Verifica del Dockerfile rifinito (31 agosto 2026): build Linux ARM64 riuscita con lint, 3 test e controllo TypeScript Next.js; runtime Node 24.20.0, UID/GID 1000, stato `healthy`. Verificati `/healthz` con `no-store`, `/`, `/about`, `/overview`, `/next.svg` e 11 asset statici della home (HTTP 200). Assenti nel runtime sorgenti `/app/src`, `.env`, pnpm/store, TypeScript ed ESLint. La prova riguarda il container locale, non un server remoto o una nuova verifica WebMCP nel browser della challenge.
+I tre account seed sono `alex@crewboard.example`, `sam@crewboard.example`, `robin@crewboard.example`; la password è quella configurata dall'operatore al primo seed. Il collega e l'altro tenant servono ai controlli di isolamento, non sono ruoli manager. Non mettere credenziali nei log o nel repository.
 
-## Configurazione Coolify
+## Health check e controllo pubblico
 
-Prima della pubblicazione occorrono istanza Coolify, server di destinazione, repository/branch contenenti questi file e sottodominio scelto. Non inserire token o chiavi nella guida o nel repository.
+Usare il `HEALTHCHECK` già nel Dockerfile: esegue Node, non curl/wget. `/healthz` risponde `{"status":"ok"}` e verifica solo il processo web. Il verde non attesta DB, login, migrazioni o WebMCP.
 
-1. Creare una risorsa Application dal repository. Usare GitHub App o deploy key se privato, senza renderlo pubblico per comodità.
-2. Selezionare il build pack **Dockerfile** e il branch che contiene la configurazione verificata.
-3. Impostare i valori seguenti; build e avvio sono già definiti nel Dockerfile.
+Controllare da una sessione pulita:
 
-| Campo | Valore |
-| --- | --- |
-| Base Directory / contesto | `/` (radice del repository) |
-| Dockerfile Location | `/Dockerfile` |
-| Docker target | Finale `runner` (oppure lasciare il default finale) |
-| Ports Exposes / porta interna | `3000` |
-| Port mapping verso host | Nessuno: usare il reverse proxy di Coolify |
-| Dominio | URL `https://` del sottodominio scelto |
-| Variabili applicative | Nessuna per lo spike |
-| Volumi persistenti | Nessuno per lo spike |
-| Pre/post deploy commands | Nessuno |
+- HTTPS valido, `/login` e asset disponibili; `/attendance` senza sessione deve mandare al login.
+- Login Alex, lettura delle presenze persistenti (`source: database`).
+- Correzione 26 agosto e nuova lettura dopo reload: 31.5 ore e quattro giorni completi.
+- Logout e rifiuto del vecchio cookie; Sam/Robin non vedono i record di Alex.
+- Tool scoperto e invocato davvero da un client WebMCP compatibile; contatore UI e JSON aggiornati. Le sole indicazioni “registered” o “healthy” non bastano.
 
-4. Usare il `HEALTHCHECK` del Dockerfile, che esegue Node e non richiede curl/wget nel container. Non sostituirlo con un controllo UI basato su comandi assenti nell'immagine. Verificare lo stato `healthy` nei dettagli del deployment.
-5. Configurare il DNS del sottodominio verso il server e l'accesso alle porte 80/443 del reverse proxy. Usare un record AAAA solo se IPv6 è configurato. Verificare che Coolify emetta un certificato valido per il dominio HTTPS.
-6. Non esporre pubblicamente la porta 3000 e non aggiungere database o credenziali prima che siano necessari. Tenere i deploy automatici disattivati durante la raccolta delle evidenze per evitare cambi di versione a metà prova.
+Il browser integrato di Codex è stato verificato in precedenza sullo spike pubblico. La prova non si estende automaticamente a questo nuovo flusso. Il collegamento Chrome disponibile nella sessione permetteva la lettura DOM ma non l'invocazione WebMCP; in Chrome usare un inspector/client compatibile. Riferimenti: [Chrome WebMCP](https://developer.chrome.com/docs/ai/webmcp), [regolamento challenge](https://webmcp.devpost.com/rules).
 
-Il container deve ascoltare su `0.0.0.0:3000`, non `127.0.0.1`. I valori `HOSTNAME` e `PORT` sono già nel Dockerfile: eventuali override in Coolify devono restare coerenti.
+Nessun iframe di anteprima o header `Permissions-Policy: tools=()` deve bloccare il tool. Non aggiungere CORS permissivi per aggirare problemi di integrazione. Condividere solo credenziali demo attraverso il canale previsto per i giudici.
 
-Riferimenti ufficiali: [Dockerfile build pack](https://coolify.io/docs/applications/build-packs/dockerfile), [health checks](https://coolify.io/docs/knowledge-base/health-checks), [Next.js standalone](https://nextjs.org/docs/app/api-reference/config/next-config-js/output).
+## Operatività
 
-## Verifica sull'URL pubblico
+Il deploy demo è a istanza singola: i limiti anti-abuso auth in memoria non sono condivisi tra repliche. Configurare `advanced.ipAddress` di Better Auth solo dopo aver identificato l'header IP e i proxy realmente fidati della rete Coolify; non fidarsi in modo globale di un `X-Forwarded-For` fornito dal client. Nessun volume applicativo è necessario; PostgreSQL deve avere volume persistente e backup. I file futuri risiederanno su Cloudflare R2 privato.
 
-Da una sessione pulita controllare certificato HTTPS, `/healthz`, `/`, caricamento JS/CSS, `/about` e `/overview`. Nessun login del provider deve impedire ai giudici l'accesso allo spike. Un HTTP 200 non dimostra che il tool funzioni.
+Tenere separati staging e versione consegnata. Prima di aggiornare il DB, revisionare le migrazioni e fare backup; un rollback dell'immagine non annulla automaticamente le migrazioni. Non cancellare i volumi per ripristinare la demo: il 26 agosto si può riportare incompleto dalla UI.
 
-Aprire lo spike nel documento principale, non in un iframe di anteprima. Non aggiungere header del proxy che disabilitino WebMCP (per esempio `Permissions-Policy: tools=()`) o CORS permissivi per tentare di abilitarlo.
-
-Usare il browser integrato di ChatGPT oppure Chrome 149+ con `chrome://flags/#enable-webmcp-testing` abilitato e browser riavviato, come indicato dal [regolamento](https://webmcp.devpost.com/rules). In Chrome occorre anche un client agente/inspector capace di scoprire e invocare i tool: il flag da solo non crea una chat. Il pulsante manuale della pagina non è una prova WebMCP.
-
-| Prova tramite agente/inspector | Esito atteso |
-| --- | --- |
-| Scoperta su `/` | Un solo `get_attendance_summary` |
-| `{"month":"2026-08"}` | 4 record, 3 completi, 1410 minuti, 23.5 ore, incompleto il 26 agosto |
-| Risultato nella pagina | Contatore WebMCP incrementato e stesso JSON |
-| `{"month":"2026-09"}` | Zero record, nessuna assenza dedotta |
-| `{"month":"2026-13"}` | Errore; nessun successo dichiarato |
-| Navigazione a `/about` o `/overview` | Tool non più disponibile |
-| Ritorno a `/` e reload | Un solo tool, nuovamente invocabile |
-| Calculate manually | Stesso risultato, contatore WebMCP invariato |
-
-## Evidenze da completare
-
-- Commit distribuito: da registrare dopo commit/push.
-- URL HTTPS: da assegnare e verificare.
-- Digest immagine / identificativo deployment Coolify: da registrare.
-- Browser, versione e configurazione WebMCP: da registrare sul deploy.
-- Data, prompt, input, risultati e contatore UI: da registrare.
-- Esito dei casi negativi e lifecycle: da registrare.
-
-Aggiornare [SPIKE.md](SPIKE.md) e [TODO.md](../TODO.md) solo dopo le prove reali. Il primo deploy non è la candidatura finale; licenza, video, account demo e requisiti restanti rimangono separati. Per rollback riutilizzare un deployment/immagine precedente verificato e ripetere health check e chiamata WebMCP.
+Riferimenti: [Coolify Dockerfile](https://coolify.io/docs/applications/build-packs/dockerfile), [health checks](https://coolify.io/docs/knowledge-base/health-checks), [Next.js standalone](https://nextjs.org/docs/app/api-reference/config/next-config-js/output).

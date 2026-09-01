@@ -4,6 +4,11 @@
 !.dockerignore
 !package.json
 !pnpm-lock.yaml
+!pnpm-workspace.yaml
+!scripts/
+!scripts/db.ts
+!drizzle/
+!drizzle/**
 !next.config.ts
 !tsconfig.json
 !postcss.config.mjs

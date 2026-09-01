@@ -7,10 +7,17 @@ ENV NEXT_TELEMETRY_DISABLED=1
 
 FROM base AS dependencies
 RUN npm install --global pnpm@10.33.3
-COPY package.json pnpm-lock.yaml ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 # Source edits preserve this layer; lockfile edits can reuse downloaded packages.
 RUN --mount=type=cache,id=crewboard-pnpm-10,target=/pnpm/store,sharing=locked \
     pnpm install --frozen-lockfile --store-dir=/pnpm/store
+
+FROM dependencies AS operations
+COPY scripts/db.ts ./scripts/db.ts
+COPY drizzle ./drizzle
+COPY src/server/db ./src/server/db
+COPY src/lib/attendance.ts ./src/lib/attendance.ts
+CMD ["node", "--import", "tsx", "scripts/db.ts", "migrate"]
 
 FROM dependencies AS builder
 COPY next.config.ts tsconfig.json postcss.config.mjs eslint.config.mjs ./

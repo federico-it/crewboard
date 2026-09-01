@@ -2,106 +2,92 @@
 
 **Your workplace, agent-ready.**
 
-Crewboard è un progetto pensato per la challenge WebMCP di OpenAI: una dashboard per gestire presenze, ferie e documenti dei dipendenti, con flussi accessibili sia dall'interfaccia sia da un agente nel browser.
+Dashboard Next.js per presenze, ferie e documenti, utilizzabile da persone e agenti WebMCP.
 
-L'obiettivo è offrire alle persone e all'agente gli stessi dati, le stesse regole e gli stessi permessi, all'interno della sessione autenticata dell'utente.
+## Stato attuale
 
-## Stato del progetto
+Il primo flusso full-stack **presenze personali** è implementato: login con Better Auth, PostgreSQL/Drizzle, calendario, aggiunta/correzione dei record e `get_attendance_summary` sugli stessi dati server della UI. I route handler sono verificati in-process contro PostgreSQL; la prova UI/WebMCP nel browser resta aperta ed è tracciata in [ATTENDANCE.md](docs/ATTENDANCE.md).
 
-**Spike WebMCP eseguibile.** Next.js espone un solo tool, `get_attendance_summary`, che legge quattro presenze hardcoded. Registrazione, scoperta e invocazione reale sono state provate nel browser integrato di Codex, anche sulla build di produzione locale. In Chrome 152, nella configurazione trovata, l'API non è disponibile: fallback manuale verificato, prova con flag ancora aperta.
-
-Next.js `16.3.3`, React `19.2.8`, TypeScript `5.9.3` e `webmcp-types` `0.1.5` sono bloccati con pnpm e lockfile. Dettagli e limiti delle prove: [resoconto spike](docs/SPIKE.md). Requisiti ufficiali: [piano challenge](docs/CHALLENGE.md).
-
-L’Overview in ingresso è conservata su `/overview` come mockup statico separato, con Tailwind ed ESLint. Lo spike rimane su `/`; i dati delle due pagine sono fixture indipendenti.
-
-Lo spike non include auth, database, ferie, PDF o dati reali. Le funzionalità e l'architettura completa descritte sotto restano proposte per l'MVP. Nessun deploy pubblico effettuato. Consegne e prove mancanti sono tracciate nel [TODO](TODO.md).
-
-## Funzionalità previste
-
-- **Overview:** riepilogo delle ore lavorate, presenze, ferie e buste paga disponibili.
-- **Attendance:** calendario personale, compilazione e controllo delle presenze.
-- **Leave:** richiesta di ferie e permessi, consultazione dello stato e approvazione.
-- **Payslips e Documents:** caricamento e consultazione di PDF con accesso riservato.
-- **Team ed Employees:** visibilità sui colleghi e gestione dei dipendenti secondo il ruolo.
-
-Sono previsti tre ruoli: `EMPLOYEE`, `MANAGER` e `ADMIN`. L'MVP esclude calcolo degli stipendi, gestione avanzata dei contratti, timbrature GPS e notifiche.
-
-## Perché WebMCP
-
-La demo proposta parte da una domanda:
-
-> “Do I need to do anything before I finish work today?”
-
-L'agente dovrà poter controllare le presenze incomplete, lo stato delle richieste ferie e le buste paga disponibili, aiutando l'utente a capire cosa resta da fare.
-
-Gli strumenti iniziali proposti sono:
-
-| Tool | Scopo |
+| Route | Stato |
 | --- | --- |
-| `get_my_attendance` | Consultare le proprie presenze |
-| `get_attendance_summary` | Riepilogare ore, presenze mancanti e ferie |
-| `get_working_colleagues` | Sapere chi lavora in una certa data |
-| `get_my_payslips` | Elencare le proprie buste paga |
-| `get_payslip` | Recuperare una propria busta paga |
-| `request_leave` | Richiedere ferie o permessi |
-| `get_leave_requests` | Consultare lo stato delle proprie richieste |
-| `approve_leave` | Approvare una richiesta, se autorizzati |
+| `/` | Rimanda a `/attendance` |
+| `/login` | Login email/password; solo account predisposti dall'operatore |
+| `/attendance` | Presenze dell'utente autenticato, calendario e tool WebMCP persistente |
+| `/spike` | Spike originale pubblico: fixture hardcoded, senza DB/auth |
+| `/overview` | Mockup statico separato; non rappresenta funzionalità HR implementate |
+| `/about` | Pagina senza tool per verificare il cleanup |
+| `/healthz` | Liveness del server; non verifica database o WebMCP |
 
-Le operazioni personali ricaveranno l'identità dalla sessione, senza consentire all'agente di scegliere un utente arbitrario. Le autorizzazioni saranno verificate sul server; le operazioni sensibili dovranno prevedere conferme esplicite.
+Ferie, approvazioni manager, PDF e Cloudflare R2 **non sono ancora implementati**. Il sito pubblico precedentemente verificato conteneva lo spike: nessun deploy del nuovo flusso è implicito in queste modifiche.
 
-## Stack e architettura proposti
+## Stack
 
-| Area | Tecnologia |
-| --- | --- |
-| Applicazione full-stack | Next.js + TypeScript |
-| Interfaccia | Tailwind CSS + shadcn/ui |
-| Database e ORM | PostgreSQL + Drizzle ORM |
-| Autenticazione | Better Auth |
-| File privati | Cloudflare R2, bucket privato tramite API S3 |
-| Grafici e date | Recharts + date-fns |
-| Hosting | Coolify + Hetzner |
-| Strumenti per l'agente | WebMCP nel browser |
+- Next.js 16.3.3, React 19.2.8, TypeScript 5.9.3, Tailwind.
+- Node >=24; pnpm 10.33.3 e un solo lockfile `pnpm-lock.yaml`.
+- PostgreSQL, Drizzle ORM, Better Auth, Zod.
+- WebMCP nativo con `document.modelContext.registerTool` e `webmcp-types`.
+- Hosting previsto: Coolify/Hetzner. File futuri: **Cloudflare R2 privato**, tramite API S3.
 
-Un'unica applicazione Next.js, senza backend separato: dashboard e tool WebMCP raggiungeranno le stesse funzioni di dominio attraverso ingressi server autenticati. La logica applicativa accederà a PostgreSQL tramite Drizzle e ai documenti tramite Cloudflare R2 privato, usando le API compatibili S3.
+Il browser non riceve credenziali DB o segreti di autenticazione. UI e tool raggiungono `/api/attendance`; il server verifica sessione e dipendente attivo a ogni richiesta. Il client non sceglie employee/user/organization ID. In questa fase ogni account accede solo alle proprie presenze, anche se appartiene alla stessa organizzazione di altri account demo.
 
-I PDF resteranno nello storage; il database conserverà i metadati. Gli URL firmati saranno generati solo dopo la verifica dei permessi. Per la demo verranno utilizzati dipendenti e documenti fittizi.
+## Avvio locale
 
-## Come iniziare
-
-Prerequisito del progetto: Node.js >=24. Il package manager è pnpm `10.33.3`; il container usa Node 24, il Node locale verificato è `26.7.0`. Non servono `.env`, credenziali o servizi esterni.
-
-Il file [.env.example](.env.example) chiarisce questa distinzione e contiene solo esempi commentati per il futuro MVP PostgreSQL/R2. Attualmente nessun codice legge quelle variabili: impostare `DATABASE_URL` non collega un database e non esistono ancora migrazioni o seed. L'app finale sarà full-stack Next.js; lo spike attuale verifica solo WebMCP.
+Richiede Node >=24, pnpm e Docker avviato.
 
 ```sh
 pnpm install --frozen-lockfile
-pnpm dev --port 3100
+cp .env.example .env
+openssl rand -hex 32
 ```
 
-Aprire [lo spike locale](http://127.0.0.1:3100). La pagina separa calcolo manuale e chiamate WebMCP; il secondo pannello cambia solo quando il tool viene invocato. Input di prova: `{"month":"2026-08"}`. Risultato atteso: 23,5 ore, 3 giornate complete, 26 agosto incompleto.
+Inserire il valore generato in `BETTER_AUTH_SECRET`, scegliere `DEMO_PASSWORD` (almeno 12 caratteri) e abilitare `DEMO_SEED_ENABLED=true` **solo per il database sintetico**. Non sovrascrivere una `.env` esistente. `BETTER_AUTH_URL` deve corrispondere esattamente all'origine usata dal browser, ad esempio `http://127.0.0.1:3100`.
+
+```sh
+pnpm db:up
+pnpm db:migrate
+pnpm db:seed
+pnpm dev --hostname 127.0.0.1 --port 3100
+```
+
+Aprire [Crewboard locale](http://127.0.0.1:3100). Accedere con `alex@crewboard.example` e la password impostata nel seed. Il seed predispone anche `sam@crewboard.example` nella stessa organizzazione e `robin@crewboard.example` in un'altra, per verificare l'isolamento. Non stampa le password e non sovrascrive account o presenze esistenti.
+
+PostgreSQL locale usa un volume dedicato e la sola porta loopback `54329`; i valori di Compose non vanno riutilizzati in produzione. Fermare il servizio con `docker compose stop db` conserva i dati. Non usare `down -v` se si desidera conservarli.
+
+## Prova funzionale
+
+1. Accedere come Alex: la fixture iniziale di agosto mostra **23h 30m**, 3 giorni completi e il 26 agosto incompleto.
+2. Chiedere all'agente compatibile “Get my attendance summary for August 2026”: il risultato deve indicare `source: database` e il contatore deve aumentare.
+3. Selezionare il 26 agosto, impostare fine `18:00` e salvare (inizio `09:00`, pausa 60 minuti).
+4. UI, reload e nuova chiamata WebMCP devono mostrare **31h 30m**, 4 giorni completi, nessuna data incompleta.
+5. Per ripetere, svuotare la fine del 26 agosto dalla UI e salvare. Il seed non azzera le modifiche.
+
+Ore conteggiate come differenza dell'orario locale meno la pausa, solo per record completi. Un turno per data; niente turni notturni, conteggio dell'ora legale o assenze dedotte dalle date vuote. Il tool legge soltanto; le correzioni avvengono nella UI.
+
+## Controlli
 
 ```sh
 pnpm lint
-pnpm typecheck
 pnpm test
+pnpm typecheck
 pnpm build
-cp -r public .next/standalone/
-cp -r .next/static .next/standalone/.next/
-PORT=3101 HOSTNAME=127.0.0.1 node .next/standalone/server.js
 ```
 
-Il server di produzione usa [127.0.0.1:3101](http://127.0.0.1:3101). Build e sviluppo sono locali, non un deploy. Procedura browser e criteri di esito sono in [SPIKE.md](docs/SPIKE.md).
+`pnpm test:integration` invoca i route handler in-process contro il database demo locale migrato e seedato; non avvia un server HTTP. Verifica login, persistenza, conflitti, isolamento, CSRF e revoca delle sessioni. `pnpm test:http` esegue lo stesso scenario contro un server locale già avviato a `TEST_BASE_URL` e rifiuta destinazioni remote. Dettagli e limiti in [ATTENDANCE.md](docs/ATTENDANCE.md).
 
-Per Coolify è predisposto un [Dockerfile](Dockerfile) con output standalone, utente non root e health check `/healthz`. La [guida di deploy](docs/DEPLOY.md) contiene prova Docker locale, configurazione del proxy HTTPS e checklist WebMCP sull'URL pubblico. Il container non richiede `.env` o servizi esterni; la configurazione predisposta non equivale a una pubblicazione effettuata.
+Per modifiche allo schema: `pnpm db:generate`, revisionare la migrazione generata e poi `pnpm db:migrate`. Non usare schema push automatici sul database di produzione.
 
-L’ambiente Cursor Cloud Agent è conservato in `.cursor/environment.json`: installazione con lockfile congelato e `pnpm dev` sulla porta 3000. Il solo lockfile autorevole è `pnpm-lock.yaml`.
+## Deploy e ambienti
 
-L’ambiente locale Codex è in [.codex/environments/environment.toml](.codex/environments/environment.toml): il setup esegue `CI=1 pnpm install --frozen-lockfile`. Le azioni **Run**, **Check** e **Build** avviano rispettivamente il dev server su [127.0.0.1:3100](http://127.0.0.1:3100), lint/typecheck/test e la build. Richiede Node e pnpm disponibili nel terminale; non installa runtime globali e non richiede segreti o database. Il setup dei nuovi worktree e le azioni seguono il formato degli [ambienti locali Codex](https://developers.openai.com/codex/app/local-environments).
+Il [Dockerfile](Dockerfile) mantiene Node 24 bloccato per digest e runtime standalone non root. Un target separato `operations` serve per migrazioni/seed; non viene incluso nel runner. Il deploy richiede ora `DATABASE_URL`, `BETTER_AUTH_URL`, `BETTER_AUTH_SECRET`: la vecchia configurazione senza env rimane sufficiente solo per `/spike` e le route pubbliche.
 
-Per lavorare sulla definizione del progetto:
+La [guida Coolify](docs/DEPLOY.md) descrive ordine delle operazioni, connessione privata al DB e controlli dopo il deploy. R2 non è ancora necessario. Non copiare `.env` nell'immagine o inserire segreti nei build args.
 
-1. Leggere [progetto e architettura](docs/PROJECT.md) per perimetro, ruoli, modello dati e decisioni aperte.
-2. Consultare il [TODO](TODO.md) per scegliere la prossima attività e aggiornarne lo stato.
-3. Usare il [brief originale](docs/brief-originale.txt) come riferimento della proposta iniziale.
-4. Seguire il [piano challenge](docs/CHALLENGE.md) e completare il [modello inglese di candidatura](docs/SUBMISSION.md) solo con funzionalità verificate.
+L'ambiente Codex in `.codex/environments/environment.toml` installa le dipendenze e avvia `pnpm dev` su 3100. Database, migrazioni e seed vanno preparati con i comandi sopra. L'ambiente Cursor usa la porta 3000: allineare `BETTER_AUTH_URL` quando si cambia origine.
 
-Non versionare credenziali, file `.env` reali, documenti personali o dump del database. Il `.gitignore` include esclusioni per questi file e per gli output generati; gli esempi `.env` privi di segreti, i lockfile e le migrazioni restano versionabili.
+## Documentazione
+
+- [Progetto e perimetro](docs/PROJECT.md), [TODO](TODO.md).
+- [Flusso presenze e verifiche](docs/ATTENDANCE.md).
+- [Prove storiche dello spike](docs/SPIKE.md).
+- [Requisiti challenge](docs/CHALLENGE.md), [bozza candidatura](docs/SUBMISSION.md).
+- [Brief originale](docs/brief-originale.txt), conservato senza modifiche.

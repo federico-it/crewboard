@@ -124,6 +124,6 @@ export function AttendanceSpike() {
       </section>
     </div>
 
-    <footer><p><Link href="/overview">Open Overview mockup →</Link></p><Link href="/about">Check navigation cleanup →</Link><p>Leaving this page should remove the tool; coming back should register it once.</p></footer>
+    <footer><p><Link href="/attendance">Open authenticated attendance →</Link></p><p><Link href="/overview">Open Overview mockup →</Link></p><Link href="/about">Check navigation cleanup →</Link><p>Leaving this page should remove the tool; coming back should register it once.</p></footer>
   </main></div>;
 }

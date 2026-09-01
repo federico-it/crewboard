@@ -1,0 +1,19 @@
+# Local development only. Production uses a private PostgreSQL service in Coolify.
+services:
+  db:
+    image: postgres:17-bookworm
+    environment:
+      POSTGRES_USER: crewboard
+      POSTGRES_PASSWORD: crewboard_local_only
+      POSTGRES_DB: crewboard
+    ports:
+      - "127.0.0.1:54329:5432"
+    volumes:
+      - crewboard_postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U crewboard -d crewboard"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+volumes:
+  crewboard_postgres:

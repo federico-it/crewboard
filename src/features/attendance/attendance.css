@@ -1,0 +1,78 @@
+.attendance-app { color-scheme: light; background: #f6f7f9; color: #20252e; min-height: 100vh; font-family: var(--font-geist-sans), system-ui, sans-serif; font-size: 14px; line-height: 1.55; }
+.attendance-app * { box-sizing: border-box; }
+.attendance-app h1 { font-size: clamp(28px, 4vw, 40px); letter-spacing: -.04em; font-weight: 650; line-height: 1.15; margin: 8px 0 12px; }
+.attendance-app h2 { font-size: 19px; font-weight: 600; letter-spacing: -.025em; margin: 0 0 12px; }
+.attendance-app p { margin: 8px 0 16px; }
+.attendance-app a { text-decoration: underline; text-underline-offset: 4px; }
+.attendance-app .brand { font-weight: 700; font-size: 14px; letter-spacing: .1em; text-decoration: none; }
+.attendance-app .muted, .attendance-app .calendar-note { color: #626b78; }
+.attendance-app .eyebrow { color: #626b78; font-size: 10px; letter-spacing: .14em; font-weight: 650; }
+.attendance-app button { border: 1px solid #20252e; background: #20252e; color: #fff; border-radius: 7px; padding: 10px 14px; font: inherit; cursor: pointer; font-weight: 550; }
+.attendance-app button.secondary { background: #fff; color: #20252e; border-color: #d4d9e1; }
+.attendance-app button:hover:not(:disabled) { filter: brightness(.94); }
+.attendance-app button:disabled { opacity: .55; cursor: not-allowed; }
+.attendance-app :focus-visible { outline: 3px solid #547ee5; outline-offset: 3px; }
+.attendance-app label { display: block; font-weight: 550; margin: 16px 0 6px; }
+.attendance-app input { display: block; width: 100%; padding: 10px 12px; border: 1px solid #b5bdc9; border-radius: 6px; background: #fff; color: #20252e; font: inherit; }
+.attendance-app .workspace-header { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 18px max(24px, calc((100vw - 1280px) / 2)); background: #fff; border-bottom: 1px solid #e2e5eb; }
+.attendance-app .workspace-header > div { display: flex; align-items: center; gap: 20px; }
+.attendance-app .workspace-main { max-width: 1328px; margin: auto; padding: 36px 24px; }
+.attendance-app .workspace-heading { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+.attendance-app .demo-badge { border: 1px solid #d7ddeb; color: #4b5770; border-radius: 99px; font-size: 11px; padding: 5px 10px; white-space: nowrap; }
+.attendance-app .summary-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 18px 0 32px; }
+.attendance-app .summary-cards > div { padding: 20px 24px; border: 1px solid #e0e4eb; background: #fff; border-radius: 10px; }
+.attendance-app .summary-cards p { color: #596371; margin: 0 0 12px; }
+.attendance-app .summary-cards strong { display: block; font-size: 30px; letter-spacing: -.035em; font-weight: 600; }
+.attendance-app .summary-cards small { font-size: 13px; font-weight: 400; letter-spacing: normal; color: #626b78; }
+.attendance-app .summary-cards span { display: block; margin-top: 10px; color: #626b78; font-size: 11px; }
+.attendance-app .calendar-toolbar, .attendance-app .calendar-toolbar > div { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.attendance-app .calendar-toolbar { margin-bottom: 16px; }
+.attendance-app .calendar-toolbar h2, .attendance-app .calendar-toolbar label { margin: 0; }
+.attendance-app .calendar-toolbar input { width: 170px; }
+.attendance-app .attendance-columns { display: grid; grid-template-columns: minmax(0, 1fr) 290px; gap: 20px; align-items: start; }
+.attendance-app .calendar-panel, .attendance-app .editor-panel { background: #fff; border: 1px solid #e0e4eb; border-radius: 10px; padding: 20px; min-width: 0; }
+.attendance-app .calendar-weekdays, .attendance-app .calendar-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); }
+.attendance-app .calendar-weekdays { text-align: right; color: #677080; font-size: 11px; padding-bottom: 12px; }
+.attendance-app .calendar-weekdays span { padding-right: 8px; }
+.attendance-app .calendar-grid { gap: 5px; }
+.attendance-app button.calendar-day { background: #fafbfc; border: 1px solid #e3e7ee; color: #303947; min-height: 85px; padding: 8px; text-align: right; display: flex; flex-direction: column; align-items: flex-end; font-weight: 500; min-width: 0; }
+.attendance-app .calendar-day small { font-size: 10px; margin-top: 5px; }
+.attendance-app .calendar-day .day-time { font-size: 9px; font-variant-numeric: tabular-nums; margin-top: 2px; }
+.attendance-app button.calendar-day.complete { background: #edf5ef; border-color: #d2e4d8; color: #28563c; }
+.attendance-app button.calendar-day.incomplete { background: #fff4dc; border-color: #e5c579; color: #785211; }
+.attendance-app button.calendar-day.selected { outline: 2px solid #547ee5; outline-offset: 1px; }
+.attendance-app .calendar-note { font-size: 11px; margin: 16px 0 0; }
+.attendance-app .editor-panel p { font-size: 12px; }
+.attendance-app .editor-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 22px; }
+.attendance-app .attention-link { display: block; width: 100%; margin-top: 10px; text-align: left; }
+.attendance-app .error-message { background: #fff0ef; color: #962c26; padding: 12px 16px; border: 1px solid #e9b7b2; border-radius: 6px; }
+.attendance-app .success-message { background: #edf5ef; color: #28563c; padding: 12px 16px; border: 1px solid #d2e4d8; border-radius: 6px; }
+.attendance-app .empty-message { text-align: center; padding: 16px; background: #f6f7f9; }
+.attendance-app .agent-panel { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; background: #fff; border: 1px solid #e0e4eb; border-radius: 10px; margin-top: 24px; padding: 24px; }
+.attendance-app .agent-panel pre { font-size: 11px; white-space: pre-wrap; overflow-wrap: anywhere; background: #f6f7f9; padding: 16px; border-radius: 6px; }
+.attendance-app .agent-placeholder { border: 1px dashed #cbd2dd; padding: 20px; color: #626b78; border-radius: 6px; }
+.attendance-app .workspace-footer { display: flex; gap: 16px; justify-content: space-between; font-size: 11px; color: #626b78; margin-top: 24px; }
+.attendance-app.login-page { display: grid; place-items: center; padding: 32px 20px; }
+.attendance-app .login-card { width: 100%; max-width: 460px; background: #fff; border: 1px solid #e0e4eb; padding: 36px; border-radius: 12px; }
+.attendance-app .login-card form { margin: 24px 0; }
+.attendance-app .login-card button { margin-top: 20px; width: 100%; }
+.attendance-app .login-card > .muted { font-size: 12px; }
+.attendance-app.session-ended { padding: 48px 24px; }
+.attendance-app.session-ended button { display: block; margin-top: 24px; }
+@media (max-width: 1000px) { .attendance-app .attendance-columns { grid-template-columns: minmax(0, 1fr); } .attendance-app .editor-panel { max-width: none; } }
+@media (max-width: 650px) {
+  .attendance-app .workspace-main { padding: 24px 12px; }
+  .attendance-app .workspace-heading, .attendance-app .calendar-toolbar { align-items: flex-start; flex-direction: column; }
+  .attendance-app .summary-cards { grid-template-columns: 1fr; gap: 8px; margin-top: 20px; }
+  .attendance-app .summary-cards > div { padding: 14px 18px; }
+  .attendance-app .summary-cards strong { font-size: 26px; }
+  .attendance-app .calendar-panel { padding: 10px; }
+  .attendance-app button.calendar-day { min-height: 62px; padding: 5px 2px; align-items: center; }
+  .attendance-app .calendar-day small { font-size: 8px; }
+  .attendance-app .calendar-day .day-time { display: none; }
+  .attendance-app .calendar-grid { gap: 3px; }
+  .attendance-app .calendar-toolbar > div { flex-wrap: wrap; }
+  .attendance-app .agent-panel { grid-template-columns: 1fr; padding: 18px; }
+  .attendance-app .workspace-header { padding: 16px 12px; }
+  .attendance-app .workspace-header > div { gap: 10px; font-size: 12px; }
+}

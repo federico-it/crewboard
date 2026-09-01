@@ -1,5 +1,5 @@
-import { AttendanceSpike } from "@/components/attendance-spike";
+import { redirect } from "next/navigation";
 
 export default function Home() {
-  return <AttendanceSpike />;
+  redirect("/attendance");
 }

@@ -98,7 +98,7 @@ export default function Home() {
             <p className="text-sm text-zinc-500">Your workplace, agent-ready.</p>
           </div>
           <div className="flex items-center gap-3">
-            <Link href="/" className="text-sm underline">WebMCP spike</Link>
+            <Link href="/spike" className="text-sm underline">WebMCP spike</Link>
             <span className="rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-medium text-emerald-600 dark:text-emerald-400">
               EMPLOYEE
             </span>

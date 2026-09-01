@@ -11,24 +11,38 @@
     "build": "next build",
     "start": "next start",
     "typecheck": "tsc --noEmit",
-    "test": "tsx --test src/lib/attendance.test.ts",
+    "test": "tsx --test src/lib/attendance.test.ts src/features/attendance/model.test.ts",
+    "test:integration": "node --env-file-if-exists=.env --conditions=react-server --import tsx --test tests/attendance.integration.test.ts",
+    "test:http": "ATTENDANCE_HTTP_TEST=true node --env-file-if-exists=.env --conditions=react-server --import tsx --test tests/attendance.integration.test.ts",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "node --env-file-if-exists=.env --import tsx scripts/db.ts migrate",
+    "db:seed": "node --env-file-if-exists=.env --import tsx scripts/db.ts seed",
+    "db:up": "docker compose up -d --wait db",
     "lint": "eslint"
   },
   "dependencies": {
+    "@better-auth/drizzle-adapter": "1.7.2",
+    "better-auth": "1.7.2",
+    "drizzle-orm": "0.45.2",
     "next": "16.3.3",
+    "pg": "8.23.0",
     "react": "19.2.8",
-    "react-dom": "19.2.8"
+    "react-dom": "19.2.8",
+    "server-only": "0.0.1",
+    "zod": "4.5.4"
   },
   "devDependencies": {
+    "@tailwindcss/postcss": "4.3.3",
     "@types/node": "26.4.0",
+    "@types/pg": "8.23.1",
     "@types/react": "19.2.18",
     "@types/react-dom": "19.2.5",
-    "tsx": "4.23.13",
-    "typescript": "5.9.3",
-    "webmcp-types": "0.1.5",
-    "@tailwindcss/postcss": "4.3.3",
+    "drizzle-kit": "0.31.10",
     "eslint": "9.39.5",
     "eslint-config-next": "16.3.3",
-    "tailwindcss": "4.3.3"
+    "tailwindcss": "4.3.3",
+    "tsx": "4.23.13",
+    "typescript": "5.9.3",
+    "webmcp-types": "0.1.5"
   }
 }

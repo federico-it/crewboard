@@ -1,8 +1,7 @@
 # Crewboard — progetto e architettura
 
-Documento di riferimento iniziale, aggiornato il 31 agosto 2026.
-La struttura è indicativa: descrive la direzione proposta, non funzionalità già implementate.
-Eccezione: lo [spike tecnico](SPIKE.md) ora implementa Next.js e il solo `get_attendance_summary` su dati hardcoded, senza il confine server autenticato descritto per l'MVP.
+Documento di riferimento iniziale, aggiornato il 1 settembre 2026.
+La direzione complessiva resta indicativa. Il primo blocco presenze è ora implementato con login, PostgreSQL, controlli server, calendario persistente e `get_attendance_summary`; ferie, ruoli manager/admin, documenti e R2 restano proposte.
 Il [testo originale](./brief-originale.txt) è conservato senza modifiche; le attività sono in [TODO.md](../TODO.md).
 Il confronto con le fonti ufficiali, i requisiti di consegna e i criteri di accettazione sono in [CHALLENGE.md](CHALLENGE.md), verificati il 31 agosto 2026.
 
@@ -22,14 +21,14 @@ Interfaccia e strumenti dell'agente devono utilizzare gli stessi dati, le stesse
 | UI | Tailwind CSS + shadcn/ui | Layout e componenti della dashboard |
 | Database | PostgreSQL | Dati relazionali |
 | ORM | Drizzle ORM | Schema, query e migrazioni |
-| Autenticazione | Better Auth | Sessioni, organizzazioni e ruoli |
+| Autenticazione | Better Auth | Sessioni personali; ruoli manager/admin ancora da implementare |
 | Storage | Cloudflare R2 tramite API compatibili S3 | PDF e documenti in bucket privato |
 | Grafici | Recharts | Riepiloghi di ore, presenze e ferie |
 | Date | date-fns | Calendario e gestione delle date |
 | Hosting | Coolify + Hetzner | Deploy dell'applicazione |
 | Integrazione agente | WebMCP nativo nel browser | Esposizione di azioni nel contesto della pagina autenticata |
 
-Lo spike usa Next.js `16.3.3` e `webmcp-types` `0.1.5`, verificati e bloccati nel lockfile. `@mcp-b/webmcp-types` resta un riferimento storico del brief, non una dipendenza. Registrazione tramite `document.modelContext.registerTool(...)`; esiti reali e browser ancora da verificare in [SPIKE.md](SPIKE.md). Lo stack restante non è ancora installato.
+L'app usa Next.js `16.3.3`, Better Auth `1.7.2`, Drizzle `0.45.2` e `webmcp-types` `0.1.5`, verificati e bloccati nel lockfile. `@mcp-b/webmcp-types` resta un riferimento storico del brief, non una dipendenza. Registrazione tramite `document.modelContext.registerTool(...)`; le prove dello spike sono in [SPIKE.md](SPIKE.md) e quelle del flusso persistente in [ATTENDANCE.md](ATTENDANCE.md).
 
 ## Architettura
 
@@ -73,7 +72,7 @@ drizzle/               Migrazioni versionate
 docs/                  Documentazione del progetto
 ```
 
-Lo spike contiene soltanto `src/app`, `src/components` e `src/lib` (fixture e riepilogo). Le directory di dominio/server e le migrazioni verranno create con l'MVP.
+Il codice attuale contiene route e API Next.js, UI del calendario, dominio presenze, autenticazione/server, schema Drizzle e migrazioni. Le aree storage, ferie, documenti e team non esistono ancora.
 
 ## Ruoli e navigazione
 
@@ -89,7 +88,7 @@ Per le operazioni personali, l'identità deriva dalla sessione: un tool `get_my_
 
 ## Modello dati iniziale
 
-Schema concettuale, da completare con identificativi, relazioni, vincoli, indici e campi necessari all'autenticazione.
+Schema complessivo concettuale. La parte implementata comprende tabelle Better Auth, organizzazioni, dipendenti e presenze con vincoli su data, turno, pausa e versione; ruoli, team, ferie e documenti vanno ancora definiti.
 
 | Entità | Campi o responsabilità previsti |
 | --- | --- |
@@ -163,10 +162,9 @@ Per chiudere la demo, il piano aggiornato propone: lettura delle anomalie → co
 ## Verifiche ancora aperte
 
 - Soddisfare i requisiti ufficiali già raccolti in [CHALLENGE.md](CHALLENGE.md); verificare ammissibilità personale, iscrizione, licenza e pubblicazione.
-- Versione supportata e aggiornata di Next.js; compatibilità delle dipendenze.
-- Verificare in esecuzione API WebMCP e tipi TypeScript sul browser scelto, partendo dai riferimenti ufficiali raccolti.
+- Ripetere la prova del flusso persistente tramite UI e WebMCP nel browser scelto; API e autorizzazioni server sono coperte dai test in-process.
 - Disponibilità effettiva dell'integrazione agente e delle superfici desktop/mobile.
-- Configurazione Better Auth, modello ruoli e isolamento di organizzazioni e team.
+- Modello ruoli e isolamento di team; sessioni personali e isolamento dei dati propri sono già implementati e testati.
 - Ambienti Coolify/Hetzner, database PostgreSQL, bucket Cloudflare R2 privato e segreti di deploy.
 
 Le affermazioni del brief su release, patch di sicurezza e date degli standard restano da verificare. La verifica documentale della challenge non equivale a una prova tecnica o a una candidatura completata.
