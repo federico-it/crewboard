@@ -1,7 +1,7 @@
 # Crewboard — cose da fare
 
 Obiettivo: sviluppare Crewboard, dashboard per presenze, ferie e documenti dei dipendenti, per la challenge WebMCP di OpenAI.
-Direzione e stack sono descritti in [docs/PROJECT.md](docs/PROJECT.md). Requisiti ufficiali verificati, priorità P0/P1 e scadenze sono in [docs/CHALLENGE.md](docs/CHALLENGE.md); il blocco presenze è implementato e verificato lato API, mentre prova browser, deploy e gli altri flussi restano aperti.
+Direzione e stack sono descritti in [docs/PROJECT.md](docs/PROJECT.md). Requisiti ufficiali verificati, priorità P0/P1 e scadenze sono in [docs/CHALLENGE.md](docs/CHALLENGE.md); il blocco presenze è implementato e verificato lato API e il primo deploy HTTPS è attivo; restano aperti prova WebMCP nel browser della challenge e gli altri flussi MVP.
 
 ## Come usare questa lista
 
@@ -37,10 +37,11 @@ Direzione e stack sono descritti in [docs/PROJECT.md](docs/PROJECT.md). Requisit
 - [ ] Estendere schema e autorizzazioni con team e fonte autorevole dei ruoli EMPLOYEE, MANAGER e ADMIN. Better Auth e i controlli server sulle presenze personali sono già attivi.
 - [x] Implementare un solo tool get_attendance_summary su array hardcoded, senza auth/DB.
 - [x] Verificare scoperta e invocazione reali nel browser integrato di Codex, UI coerente, input errato, mese vuoto, navigazione e reload (docs/SPIKE.md).
-- [ ] Chiudere la prova nel browser previsto dalla challenge: Chrome 152 disponibile ma API assente nella configurazione attuale; abilitare il flag e riprovare. La prova Codex non è dichiarata come prova ChatGPT/Chrome con flag.
-- [ ] Preparare il primo deploy e annotare browser/versione usati; seguire i riferimenti API in CHALLENGE.md, senza assumere compatibilità dai soli tipi.
+- [x] Chiudere la prova nel browser previsto dalla challenge: Chrome 152 con flag WebMCP; scoperta/invocazione verificate su `/spike` (fixture) e `/attendance` autenticato (PostgreSQL, 1.9.2026).
+- [x] Preparare il primo deploy e annotare browser/versione usati; seguire i riferimenti API in CHALLENGE.md, senza assumere compatibilità dai soli tipi.
   - [x] Predisporre Dockerfile standalone, health check e guida Coolify (docs/DEPLOY.md).
-  - [ ] Pubblicare sul dominio scelto e completare la prova WebMCP HTTPS nel browser della challenge.
+  - [x] Pubblicare sul dominio scelto (`https://crewboard.srvly.it`).
+  - [x] Completare la prova WebMCP HTTPS sul deploy pubblico (`/spike` e `/attendance` autenticato, Chrome 152 + flag; DB → 31.5 h, contatore 1).
 - [ ] Predisporre il pacchetto S2: scegliere la licenza con il titolare, aggiungere LICENSE, env di esempio senza segreti e istruzioni per migrazioni/seed.
 
 ## 3. MVP e WebMCP
@@ -81,7 +82,7 @@ Aggiungere qui le idee non necessarie alla prima demo.
 
 ## Decisioni
 
-- 2026-09-01: completato il primo blocco presenze personali con PostgreSQL/Drizzle, Better Auth, sessione demo, calendario persistente e tool sullo stesso endpoint. Test API in-process passato; prova UI/WebMCP browser e deploy restano aperti.
+- 2026-09-01: completato il primo blocco presenze personali con PostgreSQL/Drizzle, Better Auth, sessione demo, calendario persistente e tool sullo stesso endpoint. Test API in-process passato; deploy HTTPS su Coolify attivo; prova WebMCP browser sul deploy pubblico e altri flussi MVP restano aperti.
 - 2026-08-31: su indicazione del team, storage file su Cloudflare R2 privato; hosting app invariato Coolify/Hetzner. R2 non è ancora collegato.
 
 - 2026-08-31: conservata la proposta iniziale in `docs/PROJECT.md` e il testo originale in `docs/brief-originale.txt`. Direzione: app Next.js full-stack con logica di dominio condivisa tra UI e WebMCP; dettagli da validare prima dell'implementazione.
