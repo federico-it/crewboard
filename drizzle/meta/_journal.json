@@ -15,6 +15,13 @@
       "when": 1788247138140,
       "tag": "0001_long_vanisher",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1788289739992,
+      "tag": "0002_leave_requests",
+      "breakpoints": true
     }
   ]
 }

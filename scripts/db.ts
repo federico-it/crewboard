@@ -3,7 +3,7 @@ import { hashPassword } from "better-auth/crypto";
 import { migrate } from "drizzle-orm/node-postgres/migrator";
 import { and, eq } from "drizzle-orm";
 import { createDatabase } from "../src/server/db/connection";
-import { user, account, organizations, employees, attendanceRecords } from "../src/server/db/schema";
+import { user, account, organizations, employees, attendanceRecords, leaveRequests } from "../src/server/db/schema";
 import { attendance } from "../src/lib/attendance";
 
 async function main() {
@@ -43,6 +43,17 @@ try {
         const records = fixture.id === "demo-alex" ? attendance : [{ date: "2026-08-26", start: "10:00", end: "12:00", breakMinutes: 0 }];
         for (const row of records) await tx.insert(attendanceRecords).values({ id: randomUUID(), employeeId: employee.id, ...row })
           .onConflictDoNothing({ target: [attendanceRecords.employeeId, attendanceRecords.date] });
+        if (fixture.id === "demo-alex") {
+          await tx.insert(leaveRequests).values({
+            id: "demo-alex-leave-pending",
+            employeeId: employee.id,
+            type: "permission",
+            startDate: "2026-09-12",
+            endDate: "2026-09-12",
+            status: "pending",
+            note: "Demo pending request for manager approval tests.",
+          }).onConflictDoNothing();
+        }
       }
     });
     console.log("Demo accounts ready: alex@crewboard.example, sam@crewboard.example, robin@crewboard.example. Existing data preserved.");

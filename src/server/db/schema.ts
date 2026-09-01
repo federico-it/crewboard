@@ -50,3 +50,21 @@ export const attendanceRecords = pgTable("attendance", {
   check("attendance_version_positive", sql`${table.version} > 0`),
   check("attendance_shift_valid", sql`${table.end} IS NULL OR (${table.end} > ${table.start} AND EXTRACT(EPOCH FROM (${table.end} - ${table.start})) / 60 > ${table.breakMinutes})`),
 ]);
+
+export const leaveRequests = pgTable("leave_requests", {
+  id: text("id").primaryKey(),
+  employeeId: text("employee_id").notNull().references(() => employees.id, { onDelete: "cascade" }),
+  type: text("type").notNull(),
+  startDate: date("start_date", { mode: "string" }).notNull(),
+  endDate: date("end_date", { mode: "string" }).notNull(),
+  status: text("status").notNull().default("pending"),
+  note: text("note"),
+  approvedBy: text("approved_by").references(() => employees.id),
+  createdAt: createdAt(),
+  updatedAt: updatedAt(),
+}, (table) => [
+  check("leave_date_order", sql`${table.endDate} >= ${table.startDate}`),
+  check("leave_status_valid", sql`${table.status} IN ('pending', 'approved', 'rejected')`),
+  check("leave_type_valid", sql`${table.type} IN ('annual', 'sick', 'permission')`),
+  index("leave_employee_idx").on(table.employeeId),
+]);

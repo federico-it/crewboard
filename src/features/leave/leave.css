@@ -1,0 +1,17 @@
+@import "../attendance/attendance.css";
+
+.leave-app select, .leave-app textarea { display: block; width: 100%; padding: 10px 12px; border: 1px solid #b5bdc9; border-radius: 6px; background: #fff; color: #20252e; font: inherit; }
+
+.leave-app .request-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 12px; }
+.leave-app .request-card { background: #fff; border: 1px solid #e0e4eb; border-radius: 10px; padding: 16px 18px; }
+.leave-app .request-card header { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; margin-bottom: 8px; }
+.leave-app .request-card .status { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; font-weight: 650; }
+.leave-app .request-card .status.pending { color: #785211; }
+.leave-app .request-card .status.approved { color: #28563c; }
+.leave-app .request-card .status.rejected { color: #962c26; }
+.leave-app .leave-columns { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 20px; align-items: start; }
+.leave-app .draft-panel { background: #fff7e8; border: 1px solid #e5c579; border-radius: 10px; padding: 20px; }
+.leave-app .workspace-nav { display: flex; gap: 16px; font-size: 12px; }
+.leave-app .workspace-nav a { text-decoration: none; color: #626b78; }
+.leave-app .workspace-nav a[aria-current="page"] { color: #20252e; font-weight: 650; text-decoration: underline; }
+@media (max-width: 900px) { .leave-app .leave-columns { grid-template-columns: minmax(0, 1fr); } }

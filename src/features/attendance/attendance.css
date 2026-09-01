@@ -15,7 +15,11 @@
 .attendance-app label { display: block; font-weight: 550; margin: 16px 0 6px; }
 .attendance-app input { display: block; width: 100%; padding: 10px 12px; border: 1px solid #b5bdc9; border-radius: 6px; background: #fff; color: #20252e; font: inherit; }
 .attendance-app .workspace-header { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 18px max(24px, calc((100vw - 1280px) / 2)); background: #fff; border-bottom: 1px solid #e2e5eb; }
-.attendance-app .workspace-header > div { display: flex; align-items: center; gap: 20px; }
+.attendance-app .workspace-nav { display: flex; gap: 16px; font-size: 12px; margin-top: 8px; }
+.attendance-app .workspace-nav a { text-decoration: none; color: #626b78; }
+.attendance-app .workspace-nav a[aria-current="page"] { color: #20252e; font-weight: 650; text-decoration: underline; }
+.attendance-app .workspace-header > div:first-child { display: flex; flex-direction: column; gap: 0; }
+.attendance-app .workspace-header > div:last-child { display: flex; align-items: center; gap: 20px; }
 .attendance-app .workspace-main { max-width: 1328px; margin: auto; padding: 36px 24px; }
 .attendance-app .workspace-heading { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
 .attendance-app .demo-badge { border: 1px solid #d7ddeb; color: #4b5770; border-radius: 99px; font-size: 11px; padding: 5px 10px; white-space: nowrap; }

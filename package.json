@@ -11,7 +11,7 @@
     "build": "next build",
     "start": "next start",
     "typecheck": "tsc --noEmit",
-    "test": "tsx --test src/lib/attendance.test.ts src/features/attendance/model.test.ts",
+    "test": "tsx --test src/lib/attendance.test.ts src/features/attendance/model.test.ts src/features/leave/model.test.ts",
     "test:integration": "node --env-file-if-exists=.env --conditions=react-server --import tsx --test tests/attendance.integration.test.ts",
     "test:http": "ATTENDANCE_HTTP_TEST=true node --env-file-if-exists=.env --conditions=react-server --import tsx --test tests/attendance.integration.test.ts",
     "db:generate": "drizzle-kit generate",
