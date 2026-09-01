@@ -37,8 +37,12 @@ export const organizations = pgTable("organizations", {
 export const employees = pgTable("employees", {
   id: text("id").primaryKey(), userId: text("user_id").notNull().unique().references(() => user.id, { onDelete: "cascade" }),
   organizationId: text("organization_id").notNull().references(() => organizations.id),
+  role: text("role").notNull().default("employee"),
   active: boolean("active").notNull().default(true),
-}, (table) => [index("employee_organization_idx").on(table.organizationId)]);
+}, (table) => [
+  index("employee_organization_idx").on(table.organizationId),
+  check("employee_role_valid", sql`${table.role} IN ('employee', 'manager', 'admin')`),
+]);
 export const attendanceRecords = pgTable("attendance", {
   id: text("id").primaryKey(), employeeId: text("employee_id").notNull().references(() => employees.id, { onDelete: "cascade" }),
   date: date("date", { mode: "string" }).notNull(), start: time("start_time").notNull(), end: time("end_time"),

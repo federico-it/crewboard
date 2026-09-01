@@ -12,5 +12,5 @@ export default async function AttendancePage() {
     throw error;
   });
   const initial = await readAttendance(actor, { month: "2026-08" });
-  return <AttendanceWorkspace employee={{ name: actor.name, organization: actor.organization, timezone: actor.timezone, sessionContext: actor.sessionContext }} initial={initial} />;
+  return <AttendanceWorkspace employee={{ name: actor.name, organization: actor.organization, timezone: actor.timezone, sessionContext: actor.sessionContext, role: actor.role as "employee" | "manager" | "admin" }} initial={initial} />;
 }

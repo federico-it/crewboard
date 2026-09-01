@@ -7,6 +7,8 @@ const dateSchema = z.string().regex(/^\d{4}-\d{2}-\d{2}$/).refine((value) => {
 
 export const leaveTypeSchema = z.enum(["annual", "sick", "permission"]);
 export const leaveStatusSchema = z.enum(["pending", "approved", "rejected"]);
+export const employeeRoleSchema = z.enum(["employee", "manager", "admin"]);
+export const approveLeaveInputSchema = z.object({ requestId: z.string().uuid() }).strict();
 
 export const leaveRequestInputSchema = z.object({
   startDate: dateSchema,
@@ -26,8 +28,10 @@ export type LeaveRequest = LeaveRequestInput & {
   createdAt: string;
   updatedAt: string;
 };
-export type EmployeeContext = { name: string; organization: string; timezone: string; sessionContext: string };
+export type EmployeeContext = { name: string; organization: string; timezone: string; sessionContext: string; role: z.infer<typeof employeeRoleSchema> };
 export type LeaveView = { requests: LeaveRequest[] };
+export type TeamLeaveRequest = LeaveRequest & { employeeName: string };
+export type TeamLeaveView = { requests: TeamLeaveRequest[] };
 
 export const leaveTypeLabels: Record<LeaveRequestInput["type"], string> = {
   annual: "Annual leave",

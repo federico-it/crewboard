@@ -14,5 +14,5 @@ export default async function LeavePage() {
     throw error;
   });
   const initial = await readLeaveRequests(actor);
-  return <LeaveWorkspace employee={{ name: actor.name, organization: actor.organization, timezone: actor.timezone, sessionContext: actor.sessionContext }} initial={initial} />;
+  return <LeaveWorkspace employee={{ name: actor.name, organization: actor.organization, timezone: actor.timezone, sessionContext: actor.sessionContext, role: actor.role as "employee" | "manager" | "admin" }} initial={initial} />;
 }

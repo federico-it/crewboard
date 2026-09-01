@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { WorkspaceNav } from "@/components/workspace-nav";
 import { useCallback, useEffect, useRef, useState, type FormEvent } from "react";
 import { leaveRequestInputSchema, leaveTypeLabels, type EmployeeContext, type LeaveRequest, type LeaveRequestInput, type LeaveView } from "./model";
 
@@ -140,7 +141,7 @@ export function LeaveWorkspace({ employee, initial }: { employee: EmployeeContex
   const activeDraft = agentDraft;
   return <div className="attendance-app leave-app">
     <header className="workspace-header">
-      <div><Link href="/attendance" className="brand">C / CREWBOARD</Link><nav className="workspace-nav" aria-label="Workspace"><Link href="/attendance">Attendance</Link><Link href="/leave" aria-current="page">Leave</Link></nav></div>
+      <div><Link href="/attendance" className="brand">C / CREWBOARD</Link><WorkspaceNav role={employee.role} current="leave" /></div>
       <div><span>{employee.name}</span><button className="secondary" onClick={logout} disabled={busy}>Sign out</button></div>
     </header>
     <main className="workspace-main">

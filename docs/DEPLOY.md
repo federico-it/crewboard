@@ -49,7 +49,7 @@ docker run --rm --network RETE_PRIVATA --env-file /percorso/protetto/demo-seed.e
 
 `database.env` contiene `DATABASE_URL`; `demo-seed.env` aggiunge `DEMO_SEED_ENABLED=true` e `DEMO_PASSWORD`. Il nome della rete dipende dalla configurazione del server: non assumere che `crewboard_default`, usato localmente da Compose, esista su Coolify. Rimuovere i file temporanei con segreti secondo le procedure dell'operatore.
 
-I tre account seed sono `alex@crewboard.example`, `sam@crewboard.example`, `robin@crewboard.example`; la password è quella configurata dall'operatore al primo seed. Il collega e l'altro tenant servono ai controlli di isolamento, non sono ruoli manager. Non mettere credenziali nei log o nel repository.
+I tre account seed sono `alex@crewboard.example` (employee), `sam@crewboard.example` (manager) e `robin@crewboard.example` (employee, altra organizzazione); la password è quella configurata dall'operatore al primo seed. Sam può approvare le richieste del team su `/team/leave`; Robin serve ai controlli di isolamento. Non mettere credenziali nei log o nel repository.
 
 ## Health check e controllo pubblico
 

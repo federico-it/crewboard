@@ -29,7 +29,7 @@ export const attendanceInputSchema = z.object({
 
 export type AttendanceInput = z.infer<typeof attendanceInputSchema>;
 export type AttendanceRecord = AttendanceInput;
-export type EmployeeContext = { name: string; organization: string; timezone: string; sessionContext: string };
+export type EmployeeContext = { name: string; organization: string; timezone: string; sessionContext: string; role: "employee" | "manager" | "admin" };
 
 export function summarizeAttendance(month: string, rows: AttendanceRecord[], timezone: string) {
   const records = rows.filter((row) => row.date.startsWith(`${month}-`));

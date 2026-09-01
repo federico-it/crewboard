@@ -22,6 +22,13 @@
       "when": 1788289739992,
       "tag": "0002_leave_requests",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1788292001468,
+      "tag": "0003_employee_roles",
+      "breakpoints": true
     }
   ]
 }

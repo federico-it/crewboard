@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { WorkspaceNav } from "@/components/workspace-nav";
 import { useCallback, useEffect, useRef, useState, type FormEvent } from "react";
 import { monthSchema, summaryInputSchema, type AttendanceInput, type AttendanceRecord, type AttendanceSummary, type AttendanceView, type EmployeeContext } from "./model";
 
@@ -136,7 +137,7 @@ export function AttendanceWorkspace({ employee, initial }: { employee: EmployeeC
   const offset = (firstDay.getUTCDay() + 6) % 7;
   const monthLabel = firstDay.toLocaleDateString("en-GB", { month: "long", year: "numeric", timeZone: "UTC" });
   return <div className="attendance-app">
-    <header className="workspace-header"><div><Link href="/attendance" className="brand">C / CREWBOARD</Link><nav className="workspace-nav" aria-label="Workspace"><Link href="/attendance" aria-current="page">Attendance</Link><Link href="/leave">Leave</Link></nav></div><div><span>{employee.name}</span><button className="secondary" onClick={logout} disabled={busy}>Sign out</button></div></header>
+    <header className="workspace-header"><div><Link href="/attendance" className="brand">C / CREWBOARD</Link><WorkspaceNav role={employee.role} current="attendance" /></div><div><span>{employee.name}</span><button className="secondary" onClick={logout} disabled={busy}>Sign out</button></div></header>
     <main className="workspace-main">
       <div className="workspace-heading"><div><p className="eyebrow">{employee.organization} / PERSONAL WORKSPACE</p><h1>Attendance</h1><p className="muted">Review your month. Complete the details. Keep your agent in sync.</p></div><span className="demo-badge">Synthetic demo data</span></div>
       <section className="summary-cards" aria-label="Attendance summary">

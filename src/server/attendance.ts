@@ -14,7 +14,11 @@ export async function requireEmployee(headers: Headers, checkContext = false) {
     throw new HttpError(401, "SESSION_CHANGED", "Your session changed. Reload the page and sign in again.");
   }
   const [employee] = await getDatabase().db.select({
-    id: employees.id, organization: organizations.name, timezone: organizations.timezone,
+    id: employees.id,
+    organizationId: employees.organizationId,
+    organization: organizations.name,
+    timezone: organizations.timezone,
+    role: employees.role,
   }).from(employees).innerJoin(organizations, eq(employees.organizationId, organizations.id))
     .where(and(eq(employees.userId, session.user.id), eq(employees.active, true))).limit(1);
   if (!employee) throw new HttpError(403, "FORBIDDEN", "No active employee profile is available for this account.");

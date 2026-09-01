@@ -27,9 +27,9 @@ try {
         await tx.insert(organizations).values({ ...org, timezone: "Europe/Rome", isDemo: true }).onConflictDoNothing();
       }
       const fixtures = [
-        { id: "demo-alex", email: "alex@crewboard.example", name: "Alex Morgan", organizationId: "demo-crewboard" },
-        { id: "demo-sam", email: "sam@crewboard.example", name: "Sam Taylor", organizationId: "demo-crewboard" },
-        { id: "demo-robin", email: "robin@crewboard.example", name: "Robin Lee", organizationId: "demo-other-org" },
+        { id: "demo-alex", email: "alex@crewboard.example", name: "Alex Morgan", organizationId: "demo-crewboard", role: "employee" },
+        { id: "demo-sam", email: "sam@crewboard.example", name: "Sam Taylor", organizationId: "demo-crewboard", role: "manager" },
+        { id: "demo-robin", email: "robin@crewboard.example", name: "Robin Lee", organizationId: "demo-other-org", role: "employee" },
       ];
       for (const fixture of fixtures) {
         // Idempotent bootstrap: never overwrite passwords, sessions or edited attendance.
@@ -37,7 +37,8 @@ try {
         const [existingUser] = await tx.select().from(user).where(eq(user.id, fixture.id));
         if (existingUser?.email !== fixture.email) throw new Error("Demo identity collides with existing data.");
         await tx.insert(account).values({ id: `${fixture.id}-credential`, accountId: fixture.id, userId: fixture.id, providerId: "credential", issuer: "local:credential", password: passwordHash }).onConflictDoNothing();
-        await tx.insert(employees).values({ id: `${fixture.id}-employee`, userId: fixture.id, organizationId: fixture.organizationId }).onConflictDoNothing();
+        await tx.insert(employees).values({ id: `${fixture.id}-employee`, userId: fixture.id, organizationId: fixture.organizationId, role: fixture.role }).onConflictDoNothing();
+        await tx.update(employees).set({ role: fixture.role }).where(eq(employees.userId, fixture.id));
         const [employee] = await tx.select().from(employees).where(and(eq(employees.userId, fixture.id), eq(employees.organizationId, fixture.organizationId)));
         if (!employee) throw new Error("Demo employee collides with another organization.");
         const records = fixture.id === "demo-alex" ? attendance : [{ date: "2026-08-26", start: "10:00", end: "12:00", breakMinutes: 0 }];
@@ -56,7 +57,7 @@ try {
         }
       }
     });
-    console.log("Demo accounts ready: alex@crewboard.example, sam@crewboard.example, robin@crewboard.example. Existing data preserved.");
+    console.log("Demo accounts ready: alex@crewboard.example, sam@crewboard.example (manager), robin@crewboard.example. Existing data preserved.");
   }
 } finally { await pool.end(); }
 }
