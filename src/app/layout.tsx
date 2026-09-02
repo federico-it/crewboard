@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Crewboard — Your workplace, agent-ready",
   description:
-    "Dashboard per presenze, ferie e documenti dei dipendenti, accessibile sia dall'interfaccia sia da un agente WebMCP nel browser.",
+    "Employee dashboard for attendance, leave, and documents, accessible from the UI and from a WebMCP browser agent.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

@@ -37,7 +37,7 @@ function buildTodos(summary: AttendanceSummary, requests: LeaveRequest[]) {
   for (const date of summary.incompleteDates.slice(0, 2)) {
     todos.push({
       tone: "amber",
-      text: `Manca l'orario di uscita del ${date}.`,
+      text: `Missing end time for ${date}.`,
       href: "/attendance",
     });
   }
@@ -46,7 +46,7 @@ function buildTodos(summary: AttendanceSummary, requests: LeaveRequest[]) {
   if (pending.length > 0) {
     todos.push({
       tone: "sky",
-      text: `${pending.length} richiesta/e ferie in attesa di approvazione.`,
+      text: `${pending.length} leave request(s) awaiting approval.`,
       href: "/leave",
     });
   }
@@ -54,14 +54,14 @@ function buildTodos(summary: AttendanceSummary, requests: LeaveRequest[]) {
   if (todos.length === 0) {
     todos.push({
       tone: "emerald",
-      text: "Nessuna azione urgente sulle presenze o sulle ferie.",
+      text: "No urgent actions on attendance or leave.",
       href: "/attendance",
     });
   }
 
   todos.push({
     tone: "emerald",
-    text: "Buste paga: funzione prevista, non ancora attiva.",
+    text: "Payslips: planned feature, not active yet.",
   });
 
   return todos;
@@ -93,38 +93,38 @@ export function OverviewDashboard({
 
       <section className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <Card>
-          <p className="text-sm text-zinc-500">Ore lavorate</p>
+          <p className="text-sm text-zinc-500">Hours worked</p>
           <p className="mt-2 text-2xl font-semibold tracking-tight">{formatHours(summary.workedMinutes)}</p>
           <p className="mt-1 text-xs text-zinc-400">{monthLabel}</p>
         </Card>
         <Card>
-          <p className="text-sm text-zinc-500">Presenze</p>
+          <p className="text-sm text-zinc-500">Attendance</p>
           <p className="mt-2 text-2xl font-semibold tracking-tight">
             {summary.completedDays} / {summary.recordedDays}
           </p>
-          <p className="mt-1 text-xs text-zinc-400">Giorni compilati</p>
+          <p className="mt-1 text-xs text-zinc-400">Days completed</p>
         </Card>
         <Card>
-          <p className="text-sm text-zinc-500">Ferie</p>
+          <p className="text-sm text-zinc-500">Leave</p>
           <p className="mt-2 text-2xl font-semibold tracking-tight">{pendingCount} pending</p>
           <p className="mt-1 text-xs text-zinc-400">
             <Link href="/leave" className="underline underline-offset-2">
-              Vedi richieste
+              View requests
             </Link>
           </p>
         </Card>
         <Card>
-          <p className="text-sm text-zinc-500">Buste paga</p>
+          <p className="text-sm text-zinc-500">Payslips</p>
           <p className="mt-2 text-2xl font-semibold tracking-tight">—</p>
-          <p className="mt-1 text-xs text-zinc-400">In arrivo</p>
+          <p className="mt-1 text-xs text-zinc-400">Coming soon</p>
         </Card>
       </section>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <Card className="lg:col-span-2">
           <div className="flex items-center justify-between">
-            <h3 className="text-sm font-semibold">Da completare</h3>
-            <span className="text-xs text-zinc-400">{todos.length} elementi</span>
+            <h3 className="text-sm font-semibold">To do</h3>
+            <span className="text-xs text-zinc-400">{todos.length} items</span>
           </div>
           <ul className="mt-4 flex flex-col gap-3 text-sm">
             {todos.map((item) => (
@@ -149,7 +149,7 @@ export function OverviewDashboard({
         <Card>
           <div className="flex items-center justify-between gap-2">
             <h3 className="text-sm font-semibold">Your team today</h3>
-            <span className="rounded-full bg-zinc-500/10 px-2 py-0.5 text-[10px] font-medium text-zinc-500">Previsto</span>
+            <span className="rounded-full bg-zinc-500/10 px-2 py-0.5 text-[10px] font-medium text-zinc-500">Planned</span>
           </div>
           <ul className="mt-4 flex flex-col gap-3 text-sm">
             {TEAM_TODAY.map((member) => (
@@ -172,9 +172,9 @@ export function OverviewDashboard({
       {requests.length > 0 && (
         <Card>
           <div className="flex items-center justify-between">
-            <h3 className="text-sm font-semibold">Ultime richieste ferie</h3>
+            <h3 className="text-sm font-semibold">Recent leave requests</h3>
             <Link href="/leave" className="text-xs text-zinc-500 underline underline-offset-2">
-              Tutte →
+              View all →
             </Link>
           </div>
           <ul className="mt-4 flex flex-col gap-3 text-sm">
@@ -194,18 +194,18 @@ export function OverviewDashboard({
       <Card>
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <h3 className="text-sm font-semibold">Cosa puoi chiedere all&apos;agente</h3>
+            <h3 className="text-sm font-semibold">What you can ask the agent</h3>
             <p className="mt-1 text-sm text-zinc-500">
-              Esempi in linguaggio naturale per il browser agent (WebMCP). Apri la pagina collegata per
-              registrare i tool attivi.
+              Natural-language examples for the browser agent (WebMCP). Open the linked page to register
+              active tools.
             </p>
           </div>
           <div className="flex flex-wrap gap-2 text-xs">
             <span className="rounded-full bg-emerald-500/10 px-2.5 py-1 font-medium text-emerald-700 dark:text-emerald-400">
-              {AGENT_CAPABILITIES.filter((item) => item.status === "live").length} attivi
+              {AGENT_CAPABILITIES.filter((item) => item.status === "live").length} live
             </span>
             <span className="rounded-full bg-zinc-500/10 px-2.5 py-1 font-medium text-zinc-600 dark:text-zinc-300">
-              {AGENT_CAPABILITIES.filter((item) => item.status === "planned").length} in arrivo
+              {AGENT_CAPABILITIES.filter((item) => item.status === "planned").length} planned
             </span>
           </div>
         </div>
@@ -223,7 +223,7 @@ export function OverviewDashboard({
                   </code>
                 ) : (
                   <span className="rounded-md bg-sky-500/10 px-2 py-0.5 text-[11px] font-medium text-sky-700 dark:text-sky-400">
-                    Domanda guida
+                    Guide question
                   </span>
                 )}
                 <span
@@ -233,7 +233,7 @@ export function OverviewDashboard({
                       : "bg-zinc-500/10 text-zinc-600 dark:text-zinc-300"
                   }`}
                 >
-                  {item.status === "live" ? "Attivo" : "Previsto"}
+                  {item.status === "live" ? "Live" : "Planned"}
                 </span>
                 <span
                   className={`rounded-full px-2 py-0.5 text-[11px] font-medium ${
@@ -242,11 +242,11 @@ export function OverviewDashboard({
                       : "bg-zinc-500/10 text-zinc-600 dark:text-zinc-300"
                   }`}
                 >
-                  {item.role === "manager" ? "Manager" : "Dipendente"}
+                  {item.role === "manager" ? "Manager" : "Employee"}
                 </span>
                 {item.requiresConfirmation && (
                   <span className="rounded-full bg-amber-500/10 px-2 py-0.5 text-[11px] font-medium text-amber-700 dark:text-amber-400">
-                    Conferma UI
+                    UI confirmation
                   </span>
                 )}
                 {item.page && (

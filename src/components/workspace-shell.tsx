@@ -112,7 +112,7 @@ export function WorkspaceShell({ employee, children }: { employee: WorkspaceEmpl
           <span className="text-base font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">Crewboard</span>
         </Link>
         <nav className="mt-8 flex flex-col gap-6" aria-label="Workspace">
-          <NavSection label="Personale" items={PERSONAL_NAV} pathname={pathname} />
+          <NavSection label="Personal" items={PERSONAL_NAV} pathname={pathname} />
           {manager && <NavSection label="Team" items={TEAM_NAV} pathname={pathname} />}
         </nav>
         <div className="mt-auto rounded-lg bg-black/[.03] px-3 py-2 text-xs text-zinc-500 dark:bg-white/[.04] dark:text-zinc-400">
