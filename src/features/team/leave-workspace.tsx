@@ -1,9 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { WorkspaceNav } from "@/components/workspace-nav";
 import { approveLeaveInputSchema, leaveTypeLabels, type EmployeeContext, type LeaveRequest, type TeamLeaveRequest, type TeamLeaveView } from "@/features/leave/model";
 
 class RequestError extends Error {
@@ -19,7 +17,6 @@ async function request<T>(url: string, sessionContext: string, options: RequestI
 const formatRange = (startDate: string, endDate: string) => startDate === endDate ? startDate : `${startDate} → ${endDate}`;
 
 export function TeamLeaveWorkspace({ employee, initial }: { employee: EmployeeContext; initial: TeamLeaveView }) {
-  const router = useRouter();
   const [view, setView] = useState(initial);
   const [approvalDraft, setApprovalDraft] = useState<TeamLeaveRequest | null>(null);
   const [busy, setBusy] = useState(false);
@@ -104,28 +101,11 @@ export function TeamLeaveWorkspace({ employee, initial }: { employee: EmployeeCo
     } finally { setBusy(false); }
   }
 
-  async function logout() {
-    setBusy(true); setError("");
-    lifecycle.current?.abort();
-    setExpired(true); setApprovalDraft(null);
-    try {
-      const response = await fetch("/api/auth/sign-out", { method: "POST", headers: { "Content-Type": "application/json" }, body: "{}" });
-      if (!response.ok) throw new Error("Sign out failed. Retry to revoke the session.");
-      router.replace("/login");
-      router.refresh();
-    } catch (failure) { reportError(failure); }
-    finally { setBusy(false); }
-  }
+  if (expired) return <main className="attendance-app leave-app workspace-page session-ended"><h1>Session ended</h1><p role="alert">{error || "Your team tools have been disconnected."}</p><Link href="/login">Sign in again</Link></main>;
 
-  if (expired) return <main className="attendance-app leave-app session-ended"><h1>Session ended</h1><p role="alert">{error || "Your team tools have been disconnected."}</p><Link href="/login">Sign in again</Link><button onClick={logout} disabled={busy}>Retry sign out</button></main>;
-
-  return <div className="attendance-app leave-app">
-    <header className="workspace-header">
-      <div><Link href="/attendance" className="brand">C / CREWBOARD</Link><WorkspaceNav role={employee.role} current="team" /></div>
-      <div><span>{employee.name}</span><button className="secondary" onClick={logout} disabled={busy}>Sign out</button></div>
-    </header>
+  return <div className="attendance-app leave-app workspace-page">
     <main className="workspace-main">
-      <div className="workspace-heading"><div><p className="eyebrow">{employee.organization} / MANAGER WORKSPACE</p><h1>Team leave</h1><p className="muted">Review pending requests from your organization. Use the request ID for agent approval.</p></div><span className="demo-badge">Manager demo</span></div>
+      <div className="workspace-heading"><div><p className="eyebrow">{employee.organization} / MANAGER WORKSPACE</p><p className="muted">Review pending requests from your organization. Use the request ID for agent approval.</p></div><span className="demo-badge">Manager demo</span></div>
       {error && <p role="alert" className="error-message">{error}</p>}
       {message && <p role="status" className="success-message">{message}</p>}
       {busy && <p role="status" className="muted">Updating leave request…</p>}
@@ -150,7 +130,7 @@ export function TeamLeaveWorkspace({ employee, initial }: { employee: EmployeeCo
         <div><p className="eyebrow">MANAGER AGENT FLOW</p><h2 id="team-agent-heading">Ask your browser agent</h2><p>“Approve leave request [ID from the list].”</p><p role="status" className="muted">{registration}</p><p>Successful tool calls: <strong>{toolCalls}</strong></p></div>
         <div><p className="muted">Copy a pending request ID from the list above. `approve_leave` prepares approval; only your confirmation writes to PostgreSQL.</p>{toolResult ? <pre aria-label="WebMCP result">{toolResult}</pre> : <p className="agent-placeholder">Waiting for a WebMCP invocation.</p>}</div>
       </section>
-      <footer className="workspace-footer"><span>Team leave · same-organization scope only</span><Link href="/leave">Personal leave</Link></footer>
+      <footer className="workspace-footer"><span>Team leave · same-organization scope only</span><Link href="/leave">Personal leave</Link><Link href="/">Overview</Link></footer>
     </main>
   </div>;
 }

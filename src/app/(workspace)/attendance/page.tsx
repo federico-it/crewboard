@@ -3,7 +3,6 @@ import { redirect } from "next/navigation";
 import { AttendanceWorkspace } from "@/features/attendance/workspace";
 import { requireEmployee, readAttendance } from "@/server/attendance";
 import { HttpError } from "@/server/http";
-import "@/features/attendance/attendance.css";
 
 export default async function AttendancePage() {
   const requestHeaders = await headers();
@@ -12,5 +11,16 @@ export default async function AttendancePage() {
     throw error;
   });
   const initial = await readAttendance(actor, { month: "2026-08" });
-  return <AttendanceWorkspace employee={{ name: actor.name, organization: actor.organization, timezone: actor.timezone, sessionContext: actor.sessionContext, role: actor.role as "employee" | "manager" | "admin" }} initial={initial} />;
+  return (
+    <AttendanceWorkspace
+      employee={{
+        name: actor.name,
+        organization: actor.organization,
+        timezone: actor.timezone,
+        sessionContext: actor.sessionContext,
+        role: actor.role as "employee" | "manager" | "admin",
+      }}
+      initial={initial}
+    />
+  );
 }

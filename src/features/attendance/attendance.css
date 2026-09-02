@@ -1,5 +1,6 @@
 .attendance-app { color-scheme: light; background: #f6f7f9; color: #20252e; min-height: 100vh; font-family: var(--font-geist-sans), system-ui, sans-serif; font-size: 14px; line-height: 1.55; }
-.attendance-app * { box-sizing: border-box; }
+.attendance-app.workspace-page { min-height: auto; background: transparent; color: inherit; }
+.attendance-app.workspace-page .workspace-main { max-width: none; margin: 0; padding: 24px; }
 .attendance-app h1 { font-size: clamp(28px, 4vw, 40px); letter-spacing: -.04em; font-weight: 650; line-height: 1.15; margin: 8px 0 12px; }
 .attendance-app h2 { font-size: 19px; font-weight: 600; letter-spacing: -.025em; margin: 0 0 12px; }
 .attendance-app p { margin: 8px 0 16px; }

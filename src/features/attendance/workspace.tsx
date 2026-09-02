@@ -1,8 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { WorkspaceNav } from "@/components/workspace-nav";
 import { useCallback, useEffect, useRef, useState, type FormEvent } from "react";
 import { monthSchema, summaryInputSchema, type AttendanceInput, type AttendanceRecord, type AttendanceSummary, type AttendanceView, type EmployeeContext } from "./model";
 
@@ -18,7 +16,6 @@ async function request<T>(url: string, sessionContext: string, options: RequestI
 const formatHours = (minutes: number) => `${Math.floor(minutes / 60)}h ${String(minutes % 60).padStart(2, "0")}m`;
 
 export function AttendanceWorkspace({ employee, initial }: { employee: EmployeeContext; initial: AttendanceView }) {
-  const router = useRouter();
   const [view, setView] = useState(initial);
   const [month, setMonth] = useState(initial.summary.month);
   const [draft, setDraft] = useState<AttendanceInput | null>(null);
@@ -114,32 +111,19 @@ export function AttendanceWorkspace({ employee, initial }: { employee: EmployeeC
       }
     } finally { mutationPending.current = false; setBusy(false); }
   }
-  async function logout() {
-    setBusy(true); setError("");
-    lifecycle.current?.abort();
-    setExpired(true); setDraft(null); setToolResult(null);
-    try {
-      const response = await fetch("/api/auth/sign-out", { method: "POST", headers: { "Content-Type": "application/json" }, body: "{}" });
-      if (!response.ok) throw new Error("Sign out failed. Retry to revoke the session.");
-      router.replace("/login");
-      router.refresh();
-    } catch (failure) { reportError(failure); }
-    finally { setBusy(false); }
-  }
   function edit(date: string, record?: AttendanceRecord) {
     setError(""); setMessage("");
     setDraft(record ?? { date, start: "09:00", end: null, breakMinutes: 60, version: 0 });
   }
 
-  if (expired) return <main className="attendance-app session-ended"><h1>Session ended</h1><p role="alert">{error || "Your attendance tools have been disconnected."}</p><Link href="/login">Sign in again</Link><button onClick={logout} disabled={busy}>Retry sign out</button></main>;
+  if (expired) return <main className="attendance-app workspace-page session-ended"><h1>Session ended</h1><p role="alert">{error || "Your attendance tools have been disconnected."}</p><Link href="/login">Sign in again</Link></main>;
   const firstDay = new Date(`${month}-01T12:00:00Z`);
   const dayCount = new Date(Date.UTC(firstDay.getUTCFullYear(), firstDay.getUTCMonth() + 1, 0)).getUTCDate();
   const offset = (firstDay.getUTCDay() + 6) % 7;
   const monthLabel = firstDay.toLocaleDateString("en-GB", { month: "long", year: "numeric", timeZone: "UTC" });
-  return <div className="attendance-app">
-    <header className="workspace-header"><div><Link href="/attendance" className="brand">C / CREWBOARD</Link><WorkspaceNav role={employee.role} current="attendance" /></div><div><span>{employee.name}</span><button className="secondary" onClick={logout} disabled={busy}>Sign out</button></div></header>
+  return <div className="attendance-app workspace-page">
     <main className="workspace-main">
-      <div className="workspace-heading"><div><p className="eyebrow">{employee.organization} / PERSONAL WORKSPACE</p><h1>Attendance</h1><p className="muted">Review your month. Complete the details. Keep your agent in sync.</p></div><span className="demo-badge">Synthetic demo data</span></div>
+      <div className="workspace-heading"><div><p className="eyebrow">{employee.organization} / PERSONAL WORKSPACE</p><p className="muted">Review your month. Complete the details. Keep your agent in sync.</p></div><span className="demo-badge">Synthetic demo data</span></div>
       <section className="summary-cards" aria-label="Attendance summary">
         <div><p>Worked time</p><strong>{formatHours(view.summary.workedMinutes)}</strong><span>Breaks and incomplete days excluded</span></div>
         <div><p>Completed days</p><strong>{view.summary.completedDays}<small> / {view.summary.recordedDays} recorded</small></strong><span>No absence inferred for unrecorded dates</span></div>
@@ -176,7 +160,7 @@ export function AttendanceWorkspace({ employee, initial }: { employee: EmployeeC
         </aside>
       </div>
       <section className="agent-panel" aria-labelledby="agent-heading"><div><p className="eyebrow">SAME DATA, TWO WAYS TO WORK</p><h2 id="agent-heading">Ask your browser agent</h2><p>“Get my attendance summary for {monthLabel}.”</p><p role="status" className="muted">{registration}</p><p>Successful tool calls: <strong>{toolCalls}</strong></p></div><div><p className="muted">The tool reads PostgreSQL using your current session. After saving a correction, ask again to verify the updated total.</p>{toolResult ? <pre aria-label="WebMCP result">{JSON.stringify(toolResult, null, 2)}</pre> : <p className="agent-placeholder">Waiting for a WebMCP invocation.</p>}</div></section>
-      <footer className="workspace-footer"><span>Personal attendance · PostgreSQL-backed demo</span><Link href="/spike">Original technical spike</Link></footer>
+      <footer className="workspace-footer"><span>Personal attendance · PostgreSQL-backed demo</span><Link href="/spike">Original technical spike</Link><Link href="/">Overview</Link></footer>
     </main>
   </div>;
 }

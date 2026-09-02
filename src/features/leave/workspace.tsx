@@ -1,8 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { WorkspaceNav } from "@/components/workspace-nav";
 import { useCallback, useEffect, useRef, useState, type FormEvent } from "react";
 import { leaveRequestInputSchema, leaveTypeLabels, type EmployeeContext, type LeaveRequest, type LeaveRequestInput, type LeaveView } from "./model";
 
@@ -19,7 +17,6 @@ async function request<T>(url: string, sessionContext: string, options: RequestI
 const formatRange = (startDate: string, endDate: string) => startDate === endDate ? startDate : `${startDate} → ${endDate}`;
 
 export function LeaveWorkspace({ employee, initial }: { employee: EmployeeContext; initial: LeaveView }) {
-  const router = useRouter();
   const [view, setView] = useState(initial);
   const [manualDraft, setManualDraft] = useState<LeaveRequestInput>({ startDate: "2026-09-02", endDate: "2026-09-06", type: "annual", note: "" });
   const [agentDraft, setAgentDraft] = useState<LeaveRequestInput | null>(null);
@@ -123,29 +120,12 @@ export function LeaveWorkspace({ employee, initial }: { employee: EmployeeContex
     } finally { setBusy(false); }
   }
 
-  async function logout() {
-    setBusy(true); setError("");
-    lifecycle.current?.abort();
-    setExpired(true); setAgentDraft(null);
-    try {
-      const response = await fetch("/api/auth/sign-out", { method: "POST", headers: { "Content-Type": "application/json" }, body: "{}" });
-      if (!response.ok) throw new Error("Sign out failed. Retry to revoke the session.");
-      router.replace("/login");
-      router.refresh();
-    } catch (failure) { reportError(failure); }
-    finally { setBusy(false); }
-  }
-
-  if (expired) return <main className="attendance-app leave-app session-ended"><h1>Session ended</h1><p role="alert">{error || "Your leave tools have been disconnected."}</p><Link href="/login">Sign in again</Link><button onClick={logout} disabled={busy}>Retry sign out</button></main>;
+  if (expired) return <main className="attendance-app leave-app workspace-page session-ended"><h1>Session ended</h1><p role="alert">{error || "Your leave tools have been disconnected."}</p><Link href="/login">Sign in again</Link></main>;
 
   const activeDraft = agentDraft;
-  return <div className="attendance-app leave-app">
-    <header className="workspace-header">
-      <div><Link href="/attendance" className="brand">C / CREWBOARD</Link><WorkspaceNav role={employee.role} current="leave" /></div>
-      <div><span>{employee.name}</span><button className="secondary" onClick={logout} disabled={busy}>Sign out</button></div>
-    </header>
+  return <div className="attendance-app leave-app workspace-page">
     <main className="workspace-main">
-      <div className="workspace-heading"><div><p className="eyebrow">{employee.organization} / PERSONAL WORKSPACE</p><h1>Leave</h1><p className="muted">Request time off. Your agent can prepare a draft, but only you can submit it.</p></div><span className="demo-badge">Synthetic demo data</span></div>
+      <div className="workspace-heading"><div><p className="eyebrow">{employee.organization} / PERSONAL WORKSPACE</p><p className="muted">Request time off. Your agent can prepare a draft, but only you can submit it.</p></div><span className="demo-badge">Synthetic demo data</span></div>
       {error && <p role="alert" className="error-message">{error}</p>}
       {message && <p role="status" className="success-message">{message}</p>}
       {busy && <p role="status" className="muted">Saving leave request…</p>}
@@ -181,7 +161,7 @@ export function LeaveWorkspace({ employee, initial }: { employee: EmployeeContex
         <div><p className="eyebrow">SAME DATA, TWO WAYS TO WORK</p><h2 id="leave-agent-heading">Ask your browser agent</h2><p>“Request annual leave from 2 to 6 September 2026.”</p><p role="status" className="muted">{registration}</p><p>Successful tool calls: <strong>{toolCalls}</strong></p></div>
         <div><p className="muted">`request_leave` only prepares a draft. `get_leave_requests` reads your saved requests from PostgreSQL.</p>{toolResult ? <pre aria-label="WebMCP result">{toolResult}</pre> : <p className="agent-placeholder">Waiting for a WebMCP invocation.</p>}</div>
       </section>
-      <footer className="workspace-footer"><span>Personal leave · PostgreSQL-backed demo</span><Link href="/attendance">Back to attendance</Link></footer>
+      <footer className="workspace-footer"><span>Personal leave · PostgreSQL-backed demo</span><Link href="/attendance">Attendance</Link><Link href="/">Overview</Link></footer>
     </main>
   </div>;
 }

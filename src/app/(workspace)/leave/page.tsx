@@ -4,7 +4,6 @@ import { LeaveWorkspace } from "@/features/leave/workspace";
 import { requireEmployee } from "@/server/attendance";
 import { readLeaveRequests } from "@/server/leave";
 import { HttpError } from "@/server/http";
-import "@/features/attendance/attendance.css";
 import "@/features/leave/leave.css";
 
 export default async function LeavePage() {
@@ -14,5 +13,16 @@ export default async function LeavePage() {
     throw error;
   });
   const initial = await readLeaveRequests(actor);
-  return <LeaveWorkspace employee={{ name: actor.name, organization: actor.organization, timezone: actor.timezone, sessionContext: actor.sessionContext, role: actor.role as "employee" | "manager" | "admin" }} initial={initial} />;
+  return (
+    <LeaveWorkspace
+      employee={{
+        name: actor.name,
+        organization: actor.organization,
+        timezone: actor.timezone,
+        sessionContext: actor.sessionContext,
+        role: actor.role as "employee" | "manager" | "admin",
+      }}
+      initial={initial}
+    />
+  );
 }

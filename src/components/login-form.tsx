@@ -21,7 +21,7 @@ export function LoginForm() {
         setError(response.status === 429 ? "Too many attempts. Try again in a minute." : response.status >= 500 ? "Sign-in is unavailable. Check the database and server configuration." : "Email or password is incorrect.");
         return;
       }
-      router.replace("/attendance");
+      router.replace("/");
       router.refresh();
     } catch { setError("Unable to connect. Please try again."); }
     finally { setPending(false); }
